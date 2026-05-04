@@ -14,7 +14,7 @@
       "program": "${workspaceFolder}/nodeTestApp/index.js",
       "restart": true,
       "runtimeExecutable": "nodemon",
-      "console": "integratedTerminal"
+      "console": "externalTerminal"
     }
   ]
 }
