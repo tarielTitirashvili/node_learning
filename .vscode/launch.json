@@ -11,10 +11,10 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/nodeTestApp/index.js",
+      "program": "${workspaceFolder}/2expressjs/index.js",
       "restart": true,
       "runtimeExecutable": "nodemon",
-      "console": "externalTerminal"
+      "console": "internalConsole"
     }
   ]
 }

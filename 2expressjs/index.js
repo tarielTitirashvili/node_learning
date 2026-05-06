@@ -1,23 +1,17 @@
-// ! core
-const http = require('http')
-// ! 3rd party
+// 3rd party
 const express = require('express')
+const bodyParser = require('body-parser')
+// my code
+const adminRoutes = require('./routes/admin')
+const shopRoutes = require('./routes/shop')
+const notFoundRouter = require('./routes/notFound')
 
 const app = express()
-app.use((req, res, next)=>{
-  console.log('always running middleware!')
-  next()
-})
 
-app.use('/add-product', (req, res, next)=>{
-  console.log('middleware!')
-  res.send('<h1>Add Product page!!!</h1>')
-  // if we call here next execution will continue to next middlewares
-})
+app.use(bodyParser.urlencoded({extended: false}))
 
-app.use('/', (req, res, next)=>{
-  console.log('middleware!')
-  res.send('<h1>Hello!!!</h1>')
-})
+app.use('/admin',adminRoutes)
+app.use(shopRoutes)
+app.use(notFoundRouter)
 
 app.listen(9000)
