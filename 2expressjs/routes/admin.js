@@ -1,4 +1,4 @@
-const path = require('path')
+// const path = require('path')
 const express = require('express')
 
 const rootDir = require('../util/path')
@@ -9,7 +9,10 @@ const products = []
 
 adminRouter.get('/add-product', (req, res, next)=>{
   console.log('middleware!')
-  res.sendFile(path.join(rootDir, 'views', 'html', 'add-product.html'))
+  // ! with pug engine
+  res.render('pug/add-products')
+  // ! old way without Templating engine
+  // res.sendFile(path.join(rootDir, 'views', 'html', 'add-product.html'))
 })
 
 adminRouter.post('/add-product',(req, res, next)=>{
