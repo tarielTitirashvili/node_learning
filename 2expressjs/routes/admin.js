@@ -9,7 +9,7 @@ const products = []
 
 adminRouter.get('/add-product', (req, res, next)=>{
   console.log('middleware!')
-  res.sendFile(path.join(rootDir, 'views', 'add-product.html'))
+  res.sendFile(path.join(rootDir, 'views', 'html', 'add-product.html'))
 })
 
 adminRouter.post('/add-product',(req, res, next)=>{

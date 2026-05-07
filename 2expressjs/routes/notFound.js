@@ -5,7 +5,7 @@ const rootDir = require('../util/path')
 const notFoundRouter = express.Router()
 
 notFoundRouter.use((req, res, next)=>{
-  res.sendFile(path.join(rootDir, 'views', 'notFound.html'))
+  res.sendFile(path.join(rootDir, 'views', 'html', 'notFound.html'))
 })
 
 module.exports = notFoundRouter
