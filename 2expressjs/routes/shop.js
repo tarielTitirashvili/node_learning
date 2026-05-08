@@ -11,8 +11,9 @@ shopRouter.get('/', (req, res, next)=>{
   products
   // ! with pug engine
   res.render('pug/shop', {
-    docTitle: 'Shop',
-    products
+    docTitle: 'shop',
+    products,
+    path: '/'
   })
   // ! old way without Templating engine
   // res.sendFile(path.join(__dirname, '..', 'views', 'shop.html'))

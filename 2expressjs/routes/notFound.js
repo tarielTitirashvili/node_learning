@@ -6,7 +6,9 @@ const notFoundRouter = express.Router()
 
 notFoundRouter.use((req, res, next)=>{
 
-  res.render('pug/not-found')
+  res.status(404).render('pug/not-found', {
+    docTitle: 'Page Not Found'
+  })
   // ! old way without Templating engine
   // res.sendFile(path.join(rootDir, 'views', 'html', 'not-found.html'))
 })
