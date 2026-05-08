@@ -22,7 +22,7 @@ adminRouter.post('/add-product', (req, res, next) => {
     products.push(req.body)
     res.redirect('/')
   } catch (e) {
-    console.error('tariel', e)
+    console.error('error', e)
   }
 })
 
