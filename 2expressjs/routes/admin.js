@@ -10,7 +10,7 @@ const products = []
 adminRouter.get('/add-product', (req, res, next) => {
   console.log('middleware!')
   // ! with pug engine
-  res.render('pug/add-products', { path: '/admin/add-product', docTitle: 'Add Product' })
+  res.render('handlebars/add-product', { path: '/admin/add-product', docTitle: 'Add Product', activeAddProduct: true })
   // ! old way without Templating engine
   // res.sendFile(path.join(rootDir, 'views', 'html', 'add-product.html'))
 })

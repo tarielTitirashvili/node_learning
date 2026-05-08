@@ -6,7 +6,7 @@ const notFoundRouter = express.Router()
 
 notFoundRouter.use((req, res, next)=>{
 
-  res.status(404).render('pug/not-found', {
+  res.status(404).render('handlebars/not-found', {
     docTitle: 'Page Not Found'
   })
   // ! old way without Templating engine

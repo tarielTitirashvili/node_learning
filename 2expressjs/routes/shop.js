@@ -10,10 +10,12 @@ shopRouter.get('/', (req, res, next)=>{
   //! rootDir is alternative for __dirname, '..',
   products
   // ! with pug engine
-  res.render('pug/shop', {
+  res.render('handlebars/shop', {
     docTitle: 'shop',
     products,
-    path: '/'
+    path: '/',
+    hasProducts: products.length > 0,
+    activeShop: true
   })
   // ! old way without Templating engine
   // res.sendFile(path.join(__dirname, '..', 'views', 'shop.html'))
