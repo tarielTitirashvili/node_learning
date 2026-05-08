@@ -8,9 +8,9 @@ const shopRouter = express.Router()
 shopRouter.get('/', (req, res, next)=>{
   console.log('middleware!')
   //! rootDir is alternative for __dirname, '..',
-  products
+  console.log(products)
   // ! with pug engine
-  res.render('handlebars/shop', {
+  res.render('ejs/shop', {
     docTitle: 'shop',
     products,
     path: '/',
