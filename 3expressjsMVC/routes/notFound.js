@@ -1,15 +1,8 @@
-// const path = require('path')
 const express = require('express')
-// const rootDir = require('../util/path')
+const getNotFoundController = require('../controllers/notFound')
 
 const notFoundRouter = express.Router()
 
-notFoundRouter.use((req, res, next) => {
-
-  res.status(404).render('not-found', {
-    path: 'null',
-    docTitle: 'Page Not Found',
-  })
-})
+notFoundRouter.use(getNotFoundController)
 
 module.exports = notFoundRouter
