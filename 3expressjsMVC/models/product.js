@@ -15,8 +15,11 @@ const getProductsFromFile = (cb) =>{
 
 class Product {
   
-  constructor(productTitle){
+  constructor(productTitle, imageURL, description, price){
     this.title = productTitle
+    this.imageURL = imageURL || 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
+    this.description = description || ''
+    this.price = price || ''
   }
   save() {
     // const productsFilePath = path.join(rotDir, 'data', 'products.json')

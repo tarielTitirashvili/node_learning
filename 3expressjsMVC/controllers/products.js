@@ -5,7 +5,20 @@ const getProductsController = (req, res, next) => {
   Product.fetchAll((products) => {
     console.log('products', products)
 
-    res.render('shop', {
+    res.render('shop/product-list', {
+      docTitle: 'shop',
+      products,
+      path: '/products',
+    })
+  })
+}
+
+const getIndexController = (req, res, next) => {
+
+  Product.fetchAll((products) => {
+    console.log('products', products)
+
+    res.render('shop/index', {
       docTitle: 'shop',
       products,
       path: '/',
@@ -13,25 +26,26 @@ const getProductsController = (req, res, next) => {
   })
 }
 
-const getAddProductController = (req, res, next) => {
+const getCartController = (req, res, next) => {
 
-  res.render('add-product', { path: '/admin/add-product', docTitle: 'Add Product' })
+  res.render('shop/cart', {
+    docTitle: 'cart',
+    path: '/cart',
+  })
 }
 
-const postAddProductController = (req, res, next) => {
-  try {
-    console.log('req.body', req.body)
-    const product = new Product(req.body.title)
-    product.save()
+const getCheckoutController = (req, res, next) => {
 
-    res.redirect('/')
-  } catch (e) {
-    console.error('error ', e)
-  }
+  res.render('shop/checkout', {
+    docTitle: 'checkout',
+    path: '/checkout',
+  })
 }
+
 
 module.exports = {
   getProductsController,
-  getAddProductController,
-  postAddProductController,
+  getIndexController,
+  getCartController,
+  getCheckoutController
 }
