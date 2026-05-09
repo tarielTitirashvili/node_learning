@@ -11,7 +11,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/2expressjs/index.js",
+      "program": "${workspaceFolder}/3expressjsMVC/index.js",
       "restart": true,
       "runtimeExecutable": "nodemon",
       "console": "internalConsole"
