@@ -34,6 +34,22 @@ const getCartController = (req, res, next) => {
   })
 }
 
+const getOrdersController = (req, res, next) => {
+
+  res.render('shop/orders', {
+    docTitle: 'orders',
+    path: '/orders',
+  })
+}
+
+const getSingleProductController = (req, res, next) => {
+  console.log(req.params.productId)
+  res.render('shop/product-details', {
+    docTitle: 'orders',
+    path: '/orders',
+  })
+}
+
 const getCheckoutController = (req, res, next) => {
 
   res.render('shop/checkout', {
@@ -47,5 +63,7 @@ module.exports = {
   getProductsController,
   getIndexController,
   getCartController,
-  getCheckoutController
+  getCheckoutController,
+  getSingleProductController,
+  getOrdersController
 }

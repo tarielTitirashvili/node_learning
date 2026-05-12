@@ -10,7 +10,10 @@ shopRouter.get('/products', shopController.getProductsController)
 
 shopRouter.get('/cart', shopController.getCartController)
 
+shopRouter.get('/orders', shopController.getOrdersController)
+
 shopRouter.get('/checkout', shopController.getCheckoutController)
 
+shopRouter.get('/product/:productId', shopController.getSingleProductController)
 
 module.exports = shopRouter

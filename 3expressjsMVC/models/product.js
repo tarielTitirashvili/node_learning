@@ -22,6 +22,7 @@ class Product {
     this.price = price || ''
   }
   save() {
+    this.id = Math.random().toString()
     // const productsFilePath = path.join(rotDir, 'data', 'products.json')
     getProductsFromFile((products)=>{
       products.push(this)
