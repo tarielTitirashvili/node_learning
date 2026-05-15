@@ -35,9 +35,9 @@ const getCartController = (req, res, next) => {
 
 const addToCartController = (req, res, next) => {
   const productId = req.body.productId
-  console.log(productId)
+
   Product.fetchSingleProduct(productId, (product) => {
-    CartProduct.addProduct(productId, product.price, res.redirect('/cart'))
+    CartProduct.addProduct(productId, product.price, () => res.redirect('/cart'))
   })
 }
 
