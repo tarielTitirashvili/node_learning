@@ -51,6 +51,13 @@ const postEditProductController = (req, res, next) =>{
   res.redirect('/admin/products')
 }
 
+const deleteProductController = (req, res, next) => {
+  const productId = req.body.id
+
+  Product.delete(productId)
+  res.redirect('/admin/products')
+}
+
 
 module.exports = {
   getAddProductController,
@@ -58,4 +65,5 @@ module.exports = {
   getProductsForAdminController,
   getEditProductController,
   postEditProductController,
+  deleteProductController
 }

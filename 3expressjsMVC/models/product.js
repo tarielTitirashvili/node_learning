@@ -23,7 +23,7 @@ class Product {
     this.price = price || ''
   }
   save() {
-    
+
     // const productsFilePath = path.join(rotDir, 'data', 'products.json')
     getProductsFromFile((products) => {
       if (this.id) {
@@ -44,6 +44,16 @@ class Product {
           }
         })
       }
+    })
+  }
+  static delete(productId) {
+    getProductsFromFile(products => {
+      const filteredProducts = products.filter(product => product.id !== productId)
+      fs.writeFile(productsFileDir, JSON.stringify(filteredProducts), (err) => {
+        if (err) {  
+          console.error(err)
+        }
+      })
     })
   }
   static fetchAll(cb) {
