@@ -20,7 +20,7 @@
                 <div class="card__image">
                   <img src="<%= product.imageURL %>" alt="A Book">
                 </div>
-                <div class="card__content">
+                <div class="card__conte nt">
                   <h2 class="product__price">
                     <%= product.price %>
                   </h2>
@@ -29,7 +29,7 @@
                   </p>
                 </div>
                 <div class="card__actions">
-                  <button class="btn">Add to Cart</button>
+                  <%- include('../_common/includes/add-to-cart', {product}) %>
                   <a href="/product/<%= product.id %>" class="btn">Details</a>
 
                   <!-- <form action="/add-to-cart" method="POST">
@@ -41,7 +41,7 @@
             <% }) %>
               <% } else {%>
                 <h1>Product Not Found</h1>
-              <% } %>
+                <% } %>
       </main>
   </body>
 

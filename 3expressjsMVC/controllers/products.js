@@ -1,9 +1,9 @@
+const { CartProduct } = require('../models/cart')
 const Product = require('../models/product')
 
 const getProductsController = (req, res, next) => {
 
   Product.fetchAll((products) => {
-    console.log('products', products)
 
     res.render('shop/product-list', {
       docTitle: 'shop',
@@ -16,7 +16,6 @@ const getProductsController = (req, res, next) => {
 const getIndexController = (req, res, next) => {
 
   Product.fetchAll((products) => {
-    console.log('products', products)
 
     res.render('shop/index', {
       docTitle: 'shop',
@@ -34,6 +33,14 @@ const getCartController = (req, res, next) => {
   })
 }
 
+const addToCartController = (req, res, next) => {
+  const productId = req.body.productId
+  console.log(productId)
+  Product.fetchSingleProduct(productId, (product) => {
+    CartProduct.addProduct(productId, product.price, res.redirect('/cart'))
+  })
+}
+
 const getOrdersController = (req, res, next) => {
 
   res.render('shop/orders', {
@@ -44,7 +51,7 @@ const getOrdersController = (req, res, next) => {
 
 const getSingleProductController = (req, res, next) => {
   const productId = req.params.productId
-  
+
   Product.fetchSingleProduct(productId, (product) => {
     res.render('shop/product-details', {
       docTitle: 'orders',
@@ -67,6 +74,7 @@ module.exports = {
   getProductsController,
   getIndexController,
   getCartController,
+  addToCartController,
   getCheckoutController,
   getSingleProductController,
   getOrdersController

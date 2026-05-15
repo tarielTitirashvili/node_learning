@@ -29,9 +29,8 @@
                   </p>
                 </div>
                 <div class="card__actions">
-                  <form action="/add-to-cart" method="POST">
-                    <button type="submit" class="btn">Delete</button>
-                  </form>
+                  <%- include('../_common/includes/add-to-cart', {product}) %>
+                  <button type="submit" class="btn">Delete</button>
                 </div>
               </article>
             </div>
