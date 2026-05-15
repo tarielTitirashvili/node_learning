@@ -43,10 +43,14 @@ const getOrdersController = (req, res, next) => {
 }
 
 const getSingleProductController = (req, res, next) => {
-  console.log(req.params.productId)
-  res.render('shop/product-details', {
-    docTitle: 'orders',
-    path: '/orders',
+  const productId = req.params.productId
+  
+  Product.fetchSingleProduct(productId, (product) => {
+    res.render('shop/product-details', {
+      docTitle: 'orders',
+      path: '/orders',
+      product
+    })
   })
 }
 
