@@ -5,20 +5,27 @@
         <%- include('../_common/includes/header') %>
 
             <h1>Product Details</h1>
+            <% if(product !== null) { %>
             <h1>
-                <%= product.title %>
+                <%= product?.title %>
             </h1>
             <div class="card__image" style="width: 300px;">
-                <img src="<%= product.imageURL %>" alt="A Book">
+                <img src="<%= product?.imageURL %>" alt="A Book">
             </div>
             <div class="card__content">
                 <h2 class="product__price">
-                   price:  <%= product.price %>
+                   price:  <%= product?.price %>
                 </h2>
                 <p class="product__description">
-                    description:  <%= product.description %>
+                    description:  <%= product?.description %>
                 </p>
             </div>
+            <% }else{ %>
+                <h1>
+                    product not found
+                </h1>
+            <% } %>
+
     </body>
 
     </html>
