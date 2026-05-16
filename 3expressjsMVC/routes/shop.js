@@ -18,4 +18,6 @@ shopRouter.get('/checkout', shopController.getCheckoutController)
 
 shopRouter.get('/product/:productId', shopController.getSingleProductController)
 
+shopRouter.post('/cart/delete-product', shopController.deleteCartProduct)
+
 module.exports = shopRouter

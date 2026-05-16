@@ -27,9 +27,23 @@ const getIndexController = (req, res, next) => {
 
 const getCartController = (req, res, next) => {
 
-  res.render('shop/cart', {
-    docTitle: 'cart',
-    path: '/cart',
+  CartProduct.getCartData((cartData) => {
+    Product.fetchAll(products => {
+      const cartProducts = []
+      cartData.products?.map(product =>{
+        const indexOfProduct = products.findIndex(prod => prod.id === product.id)
+
+        if(indexOfProduct>=0){
+          cartProducts.push({...products[indexOfProduct], quantity: product.quantity})
+        }
+      })
+      res.render('shop/cart', {
+        docTitle: 'cart',
+        path: '/cart',
+        products: cartProducts,
+        total: cartData.totalPrice
+      })
+    })
   })
 }
 
@@ -69,6 +83,14 @@ const getCheckoutController = (req, res, next) => {
   })
 }
 
+const deleteCartProduct = (req, res, next) => {
+  const productId = req.body.id
+  const price = req.body.price
+
+  CartProduct.delete(productId, price, false)
+  
+  res.redirect('/cart')
+}
 
 module.exports = {
   getProductsController,
@@ -77,5 +99,6 @@ module.exports = {
   addToCartController,
   getCheckoutController,
   getSingleProductController,
-  getOrdersController
+  getOrdersController,
+  deleteCartProduct,
 }

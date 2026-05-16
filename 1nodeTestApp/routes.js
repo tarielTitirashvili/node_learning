@@ -16,7 +16,6 @@ function requestsHandler(req, res) {
   if (url === '/submit' && method === 'POST') {
     const body = []
     req.on('data', (chunk) => {
-      // console.log('chunk', chunk)
       body.push(chunk)
     })
     return req.on('end', () => {
