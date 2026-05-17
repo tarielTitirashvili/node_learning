@@ -7,12 +7,15 @@ const getAddProductController = (req, res, next) => {
 
 const postAddProductController = (req, res, next) => {
   try {
-    const {title, imageURL, description, price} = req.body
-    
-    const product = new Product(null, title, imageURL, description, price)
-    product.save()
+    const { title, imageURL, description, price } = req.body
 
-    res.redirect('/')
+    const product = new Product(null, title, imageURL, description, price)
+    product.save().then(dbRes => {
+      console.log('dbRes', dbRes)
+
+      res.redirect('/')
+    }).catch(err => console.error(err))
+
   } catch (e) {
     console.error('error ', e)
   }
@@ -20,26 +23,27 @@ const postAddProductController = (req, res, next) => {
 
 const getProductsForAdminController = (req, res, next) => {
 
-  Product.fetchAll((products) => {
+  Product.fetchAll().then(([products, fieldData]) => {
 
     res.render('admin/products', {
       docTitle: 'Admin Products',
       products,
       path: '/admin/products',
     })
-  })
+  }).catch(err => console.error(err))
 }
 
 const getEditProductController = (req, res, next) => {
 
   const productId = req.params.productId
-
-  Product.fetchSingleProduct(productId, product =>{
-    res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product})
-  })
+  
+  Product.fetchSingleProduct(productId).then(([products]) => {
+    const product = products.length ? products[0] : []
+    res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product })
+  }).catch(err => console.error(err))
 }
 
-const postEditProductController = (req, res, next) =>{
+const postEditProductController = (req, res, next) => {
   const pId = req.body.id
   const pTitle = req.body.title
   const pImageURL = req.body.imageURL

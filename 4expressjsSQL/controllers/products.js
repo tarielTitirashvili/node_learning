@@ -3,38 +3,37 @@ const Product = require('../models/product')
 
 const getProductsController = (req, res, next) => {
 
-  Product.fetchAll((products) => {
-
+  Product.fetchAll().then(([products, fieldData]) => {
     res.render('shop/product-list', {
       docTitle: 'shop',
       products,
       path: '/products',
     })
-  })
+  }).catch(err => console.error(err))
 }
 
 const getIndexController = (req, res, next) => {
 
-  Product.fetchAll((products) => {
-
+  Product.fetchAll().then(([products, fieldData]) => {
+    console.log('products',products)
     res.render('shop/index', {
       docTitle: 'shop',
       products,
       path: '/',
     })
-  })
+  }).catch(err => console.error(err))
 }
 
 const getCartController = (req, res, next) => {
 
   CartProduct.getCartData((cartData) => {
-    Product.fetchAll(products => {
+    Product.fetchAll().then((([products, fieldData]) => {
       const cartProducts = []
-      cartData.products?.map(product =>{
+      cartData.products?.map(product => {
         const indexOfProduct = products.findIndex(prod => prod.id === product.id)
 
-        if(indexOfProduct>=0){
-          cartProducts.push({...products[indexOfProduct], quantity: product.quantity})
+        if (indexOfProduct >= 0) {
+          cartProducts.push({ ...products[indexOfProduct], quantity: product.quantity })
         }
       })
       res.render('shop/cart', {
@@ -43,7 +42,7 @@ const getCartController = (req, res, next) => {
         products: cartProducts,
         total: cartData.totalPrice
       })
-    })
+    }))
   })
 }
 
@@ -88,7 +87,7 @@ const deleteCartProduct = (req, res, next) => {
   const price = req.body.price
 
   CartProduct.delete(productId, price, false)
-  
+
   res.redirect('/cart')
 }
 
