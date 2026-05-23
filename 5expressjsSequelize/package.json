@@ -1,0 +1,21 @@
+{
+  "name": "3expressjsMVC",
+  "version": "1.0.0",
+  "description": "desc",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "start": "nodemon index"
+  },
+  "author": "tarielTitirashvili",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-handlebars": "3.0",
+    "mysql2": "^3.22.3",
+    "pug": "^3.0.4",
+    "sequelize": "^6.37.8"
+  }
+}
