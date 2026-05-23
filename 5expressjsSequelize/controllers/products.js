@@ -78,11 +78,15 @@ const postAddToCartController = (req, res, next) => {
 }
 
 const getOrdersController = (req, res, next) => {
-
-  res.render('shop/orders', {
-    docTitle: 'orders',
-    path: '/orders',
-  })
+  req.user.getOrders({ include: ['products'] })
+    .then(orders => {
+      console.log('orders.orderItem', orders)
+      res.render('shop/orders', {
+        docTitle: 'orders',
+        path: '/orders',
+        orders
+      })
+    })
 }
 
 const getSingleProductController = (req, res, next) => {
@@ -109,11 +113,56 @@ const getCheckoutController = (req, res, next) => {
 
 const deleteCartProduct = (req, res, next) => {
   const productId = req.body.id
-  const price = req.body.price
+  // const price = req.body.price
+  let userCart
 
-  CartProduct.delete(productId, price, false)
+  req.user.getCart()
+    .then(cart => {
+      userCart = cart
+      return cart.getProducts({ where: { id: productId } })
+    })
+    .then(products => {
+      if (products.length) {
+        const product = products[0]
+        product.cartItem.destroy()
+      }
+    })
+    .catch(err => console.error(err))
+    .catch(err => console.error(err))
+
 
   res.redirect('/cart')
+}
+const postOrderController = (req, res, next) => {
+  let userCart
+  req.user.getCart()
+    .then(cart => {
+      userCart = cart
+      return cart.getProducts()
+    })
+    .then(products => {
+      return req.user.createOrder()
+        .then(order => {
+          return order.addProducts(products.map(product => {
+            product.orderItem = { quantity: product.cartItem.quantity }
+            return product
+          }))
+        })
+    })
+    .then(result => {
+      console.log(result)
+      return userCart.setProducts(null)
+    })
+    .then(result => {
+      console.log(result)
+      return res.redirect('/orders')
+    })
+    .catch(err => console.error(err))
+    .catch(err => console.error(err))
+    .catch(err => {
+      console.error(err)
+    })
+
 }
 
 module.exports = {
@@ -125,4 +174,5 @@ module.exports = {
   getSingleProductController,
   getOrdersController,
   deleteCartProduct,
+  postOrderController,
 }

@@ -1,10 +1,45 @@
 <%- include('../_common/includes/head') %>
-</head>
+    <link rel="stylesheet" href="/css/product.css">
+    </head>
 
-<body>
-    <%- include('../_common/includes/header') %>
+    <body>
+        <%- include('../_common/includes/header') %>
+            <h1>Orders</h1>
+            <% if(orders.length <=0){ %>
+                <h4> No Orders Found! </h4>
+                <% } else { %>
+                    <div class="grid">
+                        <% orders.map((order)=>{ %>
+                            <article class="card product-item">
+                                <header class="card__header">
+                                    <h1 class="product__title">
+                                        Order Id: <%= order.id %>
+                                    </h1>
+                                </header>
+                                <% order.products?.map(product=>{ %>
+                                    <header class="card__header">
+                                        <h1 class="product__title">
+                                            <%= product.title %>
+                                        </h1>
+                                    </header>
+                                    <div class="card__conte nt">
+                                        <div class="card__image">
+                                            <img src="<%= product.imageUrl %>" alt="A Book">
+                                        </div>
+                                        <h2 class="product__price">
+                                            <%= product.price %>
+                                        </h2>
+                                        <p class="product__description">
+                                            <%= product.description %>
+                                        </p>
+                                        <strong class="centred">quantity: <%= product?.orderItem?.quantity %>
+                                        </strong>
+                                    </div>
+                                    <% }) %>
+                            </article>
+                            <% }) %>
+                    </div>
+                    <% } %>
+    </body>
 
-    <h1>Orders</h1>
-</body>
-
-</html>
+    </html>

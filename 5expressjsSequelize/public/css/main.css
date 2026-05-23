@@ -108,3 +108,9 @@ main {
   background-color: #00695c;
   color: white;
 }
+.centred{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+}

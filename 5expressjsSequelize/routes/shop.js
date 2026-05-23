@@ -20,4 +20,6 @@ shopRouter.get('/product/:productId', shopController.getSingleProductController)
 
 shopRouter.post('/cart/delete-product', shopController.deleteCartProduct)
 
+shopRouter.post('/create-order', shopController.postOrderController)
+
 module.exports = shopRouter
