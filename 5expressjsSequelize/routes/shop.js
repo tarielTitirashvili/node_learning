@@ -10,7 +10,7 @@ shopRouter.get('/products', shopController.getProductsController)
 
 shopRouter.get('/cart', shopController.getCartController)
 
-shopRouter.post('/add-to-cart', shopController.addToCartController)
+shopRouter.post('/add-to-cart', shopController.postAddToCartController)
 
 shopRouter.get('/orders', shopController.getOrdersController)
 

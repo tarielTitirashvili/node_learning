@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const path = require('path')
 
 // my code
-const { adminRouter } = require('./routes/admin')
+const adminRouter = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
 const notFoundRouter = require('./routes/notFound')
 const rootDir = require('./util/path')
@@ -42,21 +42,38 @@ Product.belongsTo(User, { constraint: true, onDelete: 'CASCADE' })
 User.hasMany(Product)
 User.hasOne(Cart)
 Cart.belongsTo(User)
-Cart.belongsToMany(Product, {through: CartItem})
-Product.belongsToMany(Cart, {through: CartItem})
+Cart.belongsToMany(Product, { through: CartItem })
+Product.belongsToMany(Cart, { through: CartItem })
 
-sequelize.sync({ force: true }).then(res => {
+sequelize.sync(
+  // { force: true }
+).then(res => {
   return User.findByPk(1)
 })
   .then((user) => {
-    console.log('NEW TARIEL')
+    // console.log('NEW TARIEL')
     if (!user) {
       return User.create({ name: 'Tariel', lastName: 'titirashvili', email: 'tariel@gmail.com' }).catch(err => console.log('error', err))
     }
-    console.log('tariel', user)
+    // console.log('tariel', user)
     return user
   }).then((user) => {
-    console.log('New TARIEL', user)
+    user.getCart()
+      .then(cart => {
+        if (!cart) {
+          return user.createCart()
+        }
+        return cart
+      })
+      .then(
+        cart => {
+          // console.log('New TARIEL\'s cart', cart)
+        }
+      )
+      .catch(err => {
+        console.log(err)
+      })
+    // console.log('New TARIEL', user)
   })
   .catch((err) => {
     // console.error('sync Error',err)

@@ -24,32 +24,57 @@ const getIndexController = (req, res, next) => {
 
 const getCartController = (req, res, next) => {
 
-  CartProduct.getCartData((cartData) => {
-    Product.fetchAll().then((([products, fieldData]) => {
-      const cartProducts = []
-      cartData.products?.map(product => {
-        const indexOfProduct = products.findIndex(prod => prod.id === product.id)
-
-        if (indexOfProduct >= 0) {
-          cartProducts.push({ ...products[indexOfProduct], quantity: product.quantity })
-        }
-      })
+  req.user.getCart()
+    .then(cart => {
+      return cart.getProducts()
+    }).then(cartProducts => {
       res.render('shop/cart', {
         docTitle: 'cart',
         path: '/cart',
         products: cartProducts,
-        total: cartData.totalPrice
+        total: 1 //cartData.totalPrice
       })
-    })).catch(err=> console.error(err))
-  })
+    })
+    .catch(err => console.error(err))
+    .catch(err => console.error(err))
 }
 
-const addToCartController = (req, res, next) => {
-  const productId = req.body.productId
+const postAddToCartController = (req, res, next) => {
 
-  Product.fetchSingleProduct(productId, (product) => {
-    CartProduct.addProduct(productId, product.price, () => res.redirect('/cart'))
-  })
+  const productId = req.body.productId
+  let userCart
+  req.user.getCart()
+    .then(cart => {
+      userCart = cart
+      return cart.getProducts({ where: { id: productId } })
+    })
+    .then(products => {
+      let product
+      if (products.length) {
+        product = products[0]
+      }
+      let newQuantity = 1
+      if (product) {
+        const oldQuantity = product.cartItem.quantity
+        newQuantity = oldQuantity + 1
+        userCart.addProduct(product, { trough: { quantity: newQuantity } })
+      }
+
+      return Product
+        .findByPk(productId)
+        .then(product => {
+          return userCart.addProduct(product, { through: { quantity: newQuantity } })
+        })
+        .then(() => res.redirect('/cart'))
+        .catch(err => console.error(err))
+        .catch(err => console.error(err))
+
+    })
+    .catch(err => console.error(err))
+
+  // Product.fetchSingleProduct(productId, (product) => {
+  //   CartProduct.addProduct(productId, product.price, )
+  // })
 }
 
 const getOrdersController = (req, res, next) => {
@@ -95,7 +120,7 @@ module.exports = {
   getProductsController,
   getIndexController,
   getCartController,
-  addToCartController,
+  postAddToCartController,
   getCheckoutController,
   getSingleProductController,
   getOrdersController,

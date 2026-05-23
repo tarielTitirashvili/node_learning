@@ -28,7 +28,7 @@
                                     <p class="product__description">
                                         <%= product.description %>
                                     </p>
-                                    <strong><%= product.quantity %></strong>
+                                    <strong>quantity: <%= product.cartItem.quantity %></strong>
                                 </div>
                                 <div class="card__actions">
                                     <%- include('../_common/includes/add-to-cart', {product}) %>

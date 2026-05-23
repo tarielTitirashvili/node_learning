@@ -18,6 +18,4 @@ adminRouter.get('/products', adminController.getProductsForAdminController)
 
 adminRouter.post('/delete-product', adminController.deleteProductController)
 
-module.exports = {
-  adminRouter,
-}
+module.exports = adminRouter
