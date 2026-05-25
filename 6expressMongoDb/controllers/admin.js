@@ -10,7 +10,7 @@ const postAddProductController = (req, res, next) => {
   try {
     const { title, imageURL, description, price } = req.body
     console.log('req.body',)
-    const product = new Product(title, price, description, imageURL || 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png')
+    const product = new Product(title, price, description, imageURL || 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png', null, req.user._id)
     product.save()
       .then(
         result => {
@@ -55,7 +55,7 @@ const getEditProductController = (req, res, next) => {
   Product.findProduct(productId)
     .then(
       product => {
-        console.log('products', product)
+        // console.log('products', product)
         // const product = products.length ? products[0] : []
         res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product })
       }
@@ -71,11 +71,11 @@ const postEditProductController = (req, res, next) => {
   const pDescription = req.body.description
   const pPrice = req.body.price
 
-  const product = new Product(pTitle, pPrice, pDescription, pImageURL, pId)
+  const product = new Product(pTitle, pPrice, pDescription, pImageURL, pId, req.user._id)
   product
     .save()
     .then(dbRes => {
-      console.log('successResponse', dbRes)
+      // console.log('successResponse', dbRes)
       res.redirect('/admin/products')
     })
     .catch(err => console.error(err))
@@ -86,7 +86,7 @@ const deleteProductController = (req, res, next) => {
 
   Product.deleteById(productId)
     .then(dbRes => {
-      console.log('error Success Message DB', dbRes)
+      // console.log('error Success Message DB', dbRes)
       res.redirect('/admin/products')
     })
     .catch(err => console.error(err))

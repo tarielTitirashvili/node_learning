@@ -1,5 +1,5 @@
-const { CartProduct } = require('../models/cart')
 const Product = require('../models/product')
+const User = require('../models/user')
 
 const getProductsController = (req, res, next) => {
   Product.fetchAll().then(products => {
@@ -42,39 +42,19 @@ const getCartController = (req, res, next) => {
 const postAddToCartController = (req, res, next) => {
 
   const productId = req.body.productId
-  let userCart
-  req.user.getCart()
-    .then(cart => {
-      userCart = cart
-      return cart.getProducts({ where: { id: productId } })
-    })
-    .then(products => {
-      let product
-      if (products.length) {
-        product = products[0]
-      }
-      let newQuantity = 1
-      if (product) {
-        const oldQuantity = product.cartItem.quantity
-        newQuantity = oldQuantity + 1
-        userCart.addProduct(product, { trough: { quantity: newQuantity } })
-      }
 
-      return Product
-        .findByPk(productId)
-        .then(product => {
-          return userCart.addProduct(product, { through: { quantity: newQuantity } })
+  Product.findProduct(productId).then(
+    product => {
+      return req.user.addToCart(product)
+        .then(DBRes => {
+          console.log('added to cart response TARIEL', DBRes)
+
+          return DBRes
         })
         .then(() => res.redirect('/cart'))
         .catch(err => console.error(err))
-        .catch(err => console.error(err))
-
-    })
-    .catch(err => console.error(err))
-
-  // Product.fetchSingleProduct(productId, (product) => {
-  //   CartProduct.addProduct(productId, product.price, )
-  // })
+    }
+  ).catch(err => console.error(err))
 }
 
 const getOrdersController = (req, res, next) => {

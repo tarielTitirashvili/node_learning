@@ -8,12 +8,13 @@ const getProductsDB = () => {
 }
 
 class Product {
-  constructor(title, price, description, imageUrl, id) {
+  constructor(title, price, description, imageUrl, id, userId) {
     this.title = title
     this.price = price
     this.description = description
     this.imageUrl = imageUrl
     this._id = id ? new mongodb.ObjectId(id) : null
+    this.userId = userId
   }
 
   save() {
@@ -44,7 +45,7 @@ class Product {
   static findProduct(_id) {
     return getProductsDB()
       .find({ _id: new mongodb.ObjectId(_id) })
-      .next()
+      .next() // next returns only first founded element
       .then(
         products => {
           return products
