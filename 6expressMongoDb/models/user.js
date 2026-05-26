@@ -77,8 +77,9 @@ class User {
 
   order() {
     const db = getDB()
-    this.getCart()
+    return this.getCart()
       .then(products => {
+        console.log('ORDER PRODUCTS', products)
         const order = {
           items: products,
           user: {
@@ -96,6 +97,7 @@ class User {
             { $set: { cart: { items: [] } } }
           )
       })
+      .catch(err => console.log(err))
       .catch(err => console.log(err))
   }
 

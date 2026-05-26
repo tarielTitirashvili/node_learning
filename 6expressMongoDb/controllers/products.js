@@ -105,7 +105,7 @@ const deleteCartProduct = (req, res, next) => {
 }
 
 const postOrderController = (req, res, next) => {
-  req.user.getOrders()
+  req.user.order()
     .then(result => {
       res.redirect('/orders')
       return result
