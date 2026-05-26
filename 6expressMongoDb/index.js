@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   User
     .fetchById('6a135c5b11dbed4fdefd81ca')
     .then(user => {
-      req.user = new User(user.name, user.email, user.cart, user._id)
+      req.user = new User(user.name, user.email, user.cart?.items ? user.cart : { items: [] }, user._id)
       next()
     })
     .catch(err => console.error(err))

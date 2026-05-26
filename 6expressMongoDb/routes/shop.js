@@ -18,7 +18,7 @@ shopRouter.get('/checkout', shopController.getCheckoutController)
 
 shopRouter.get('/product/:productId', shopController.getSingleProductController)
 
-shopRouter.post('/cart/delete-product', shopController.deleteCartProduct)
+shopRouter.get('/cart/delete-product/:productId', shopController.deleteCartProduct)
 
 shopRouter.post('/create-order', shopController.postOrderController)
 

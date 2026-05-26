@@ -25,9 +25,7 @@ const getIndexController = (req, res, next) => {
 const getCartController = (req, res, next) => {
 
   req.user.getCart()
-    .then(cart => {
-      return cart.getProducts()
-    }).then(cartProducts => {
+    .then(cartProducts => {
       res.render('shop/cart', {
         docTitle: 'cart',
         path: '/cart',
@@ -92,27 +90,21 @@ const getCheckoutController = (req, res, next) => {
 }
 
 const deleteCartProduct = (req, res, next) => {
-  const productId = req.body.id
+  const productId = req.params.productId
+  console.log('req.params', req.params)
   // const price = req.body.price
-  let userCart
-
-  req.user.getCart()
-    .then(cart => {
-      userCart = cart
-      return cart.getProducts({ where: { id: productId } })
-    })
+  console.log('productId', productId)
+  req.user.deleteItemFromCart(productId)
     .then(products => {
-      if (products.length) {
-        const product = products[0]
-        product.cartItem.destroy()
-      }
+      res.redirect('/cart')
+
     })
-    .catch(err => console.error(err))
-    .catch(err => console.error(err))
-
-
-  res.redirect('/cart')
+    .catch(err => {
+      res.redirect('/cart')
+      console.error(err)
+    })
 }
+
 const postOrderController = (req, res, next) => {
   let userCart
   req.user.getCart()
