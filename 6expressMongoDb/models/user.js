@@ -60,12 +60,28 @@ class User {
 
   deleteItemFromCart(productId) {
     const updatedCartItems = this.cart.items.filter(p => p.productId.toString() !== productId.toString())
-    const updatedCart = {items: updatedCartItems}
+    const updatedCart = { items: updatedCartItems }
     return getUsersDB()
       .updateOne(
         { _id: this._id },
         { $set: { cart: updatedCart } }
       )
+  }
+
+  order() {
+    const db = getDB()
+    return db.collection('orders').insertOne({
+      userId: new mongodb.ObjectId(this._id),
+      order: this.cart
+    })
+      .then(dbRes => {
+        return getUsersDB()
+          .updateOne(
+            { _id: this._id },
+            { $set: { cart: { items: [] } } }
+          )
+      })
+      .catch(err => console.log(err))
   }
 
   static fetchById(_id) {

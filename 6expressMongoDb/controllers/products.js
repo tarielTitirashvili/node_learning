@@ -91,13 +91,12 @@ const getCheckoutController = (req, res, next) => {
 
 const deleteCartProduct = (req, res, next) => {
   const productId = req.params.productId
-  console.log('req.params', req.params)
   // const price = req.body.price
-  console.log('productId', productId)
+
   req.user.deleteItemFromCart(productId)
     .then(products => {
       res.redirect('/cart')
-
+      return products
     })
     .catch(err => {
       res.redirect('/cart')
@@ -106,35 +105,12 @@ const deleteCartProduct = (req, res, next) => {
 }
 
 const postOrderController = (req, res, next) => {
-  let userCart
-  req.user.getCart()
-    .then(cart => {
-      userCart = cart
-      return cart.getProducts()
-    })
-    .then(products => {
-      return req.user.createOrder()
-        .then(order => {
-          return order.addProducts(products.map(product => {
-            product.orderItem = { quantity: product.cartItem.quantity }
-            return product
-          }))
-        })
-    })
+  req.user.order()
     .then(result => {
-      console.log(result)
-      return userCart.setProducts(null)
-    })
-    .then(result => {
-      console.log(result)
-      return res.redirect('/orders')
+      res.redirect('/cart')
+      return result
     })
     .catch(err => console.error(err))
-    .catch(err => console.error(err))
-    .catch(err => {
-      console.error(err)
-    })
-
 }
 
 module.exports = {
