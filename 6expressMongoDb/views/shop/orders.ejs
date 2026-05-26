@@ -13,15 +13,10 @@
                             <article class="card product-item">
                                 <header class="card__header">
                                     <h1 class="product__title">
-                                        Order Id: <%= order.id %>
+                                        Order Id: <%= order._id %>
                                     </h1>
                                 </header>
-                                <% order.products?.map(product=>{ %>
-                                    <header class="card__header">
-                                        <h1 class="product__title">
-                                            <%= product.title %>
-                                        </h1>
-                                    </header>
+                                <% order.items?.map(product=>{ %>
                                     <div class="card__conte nt">
                                         <div class="card__image">
                                             <img src="<%= product.imageUrl %>" alt="A Book">
@@ -32,7 +27,7 @@
                                         <p class="product__description">
                                             <%= product.description %>
                                         </p>
-                                        <strong class="centred">quantity: <%= product?.orderItem?.quantity %>
+                                        <strong class="centred">quantity: <%= product?.quantity %>
                                         </strong>
                                     </div>
                                     <% }) %>

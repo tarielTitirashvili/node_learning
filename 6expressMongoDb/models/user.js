@@ -68,12 +68,27 @@ class User {
       )
   }
 
+  getOrders() {
+    const db = getDB()
+    return db.collection('orders')
+      .find({ 'user._id': new mongodb.ObjectId(this._id) })
+      .toArray()
+  }
+
   order() {
     const db = getDB()
-    return db.collection('orders').insertOne({
-      userId: new mongodb.ObjectId(this._id),
-      order: this.cart
-    })
+    this.getCart()
+      .then(products => {
+        const order = {
+          items: products,
+          user: {
+            _id: new mongodb.ObjectId(this._id),
+            name: this.name,
+            email: this.email
+          }
+        }
+        return db.collection('orders').insertOne(order)
+      })
       .then(dbRes => {
         return getUsersDB()
           .updateOne(

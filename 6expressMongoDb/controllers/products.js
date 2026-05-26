@@ -56,7 +56,7 @@ const postAddToCartController = (req, res, next) => {
 }
 
 const getOrdersController = (req, res, next) => {
-  req.user.getOrders({ include: ['products'] })
+  req.user.getOrders()
     .then(orders => {
       console.log('orders.orderItem', orders)
       res.render('shop/orders', {
@@ -105,9 +105,9 @@ const deleteCartProduct = (req, res, next) => {
 }
 
 const postOrderController = (req, res, next) => {
-  req.user.order()
+  req.user.getOrders()
     .then(result => {
-      res.redirect('/cart')
+      res.redirect('/orders')
       return result
     })
     .catch(err => console.error(err))
