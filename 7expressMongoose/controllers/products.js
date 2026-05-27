@@ -1,5 +1,6 @@
+const Order = require('../models/order')
 const Product = require('../models/product')
-const User = require('../models/user')
+// const User = require('../models/user')
 
 const getProductsController = (req, res, next) => {
   Product.find().then(products => {
@@ -24,16 +25,18 @@ const getIndexController = (req, res, next) => {
 
 const getCartController = (req, res, next) => {
 
-  req.user.getCart()
+  req.user
+    .populate('cart.items.productId')
+    // .execPopulate() //! might need in some cases
     .then(cartProducts => {
+      console.log(cartProducts.cart.items)
       res.render('shop/cart', {
         docTitle: 'cart',
         path: '/cart',
-        products: cartProducts,
+        products: cartProducts.cart.items,
         total: 1 //cartData.totalPrice
       })
     })
-    .catch(err => console.error(err))
     .catch(err => console.error(err))
 }
 
@@ -41,30 +44,32 @@ const postAddToCartController = (req, res, next) => {
 
   const productId = req.body.productId
 
-  Product.findProduct(productId).then(
-    product => {
-      return req.user.addToCart(product)
+  Product
+    .findById(productId)
+    .then(product => {
+      req.user
+        .addToCart(product)
         .then(DBRes => {
-          console.log('added to cart response TARIEL', DBRes)
-
-          return DBRes
+          console.log('DBRes', DBRes)
+          res.redirect('/cart')
         })
-        .then(() => res.redirect('/cart'))
         .catch(err => console.error(err))
-    }
-  ).catch(err => console.error(err))
+    })
+    .catch(err => console.error(err))
 }
 
 const getOrdersController = (req, res, next) => {
-  req.user.getOrders()
+  Order
+    .find({ 'user.userId': req.user._id })
     .then(orders => {
-      console.log('orders.orderItem', orders)
+      console.log('orders.orderItem', orders[0].products)
       res.render('shop/orders', {
         docTitle: 'orders',
         path: '/orders',
         orders
       })
     })
+    .catch(err => console.error(err))
 }
 
 const getSingleProductController = (req, res, next) => {
@@ -93,7 +98,7 @@ const deleteCartProduct = (req, res, next) => {
   const productId = req.params.productId
   // const price = req.body.price
 
-  Product.findByIdAndDelete(productId)
+  req.user.removeFromCart(productId)
     .then(products => {
       res.redirect('/cart')
       return products
@@ -105,10 +110,33 @@ const deleteCartProduct = (req, res, next) => {
 }
 
 const postOrderController = (req, res, next) => {
-  req.user.order()
-    .then(result => {
-      res.redirect('/orders')
-      return result
+
+  req.user
+    .populate('cart.items.productId', '-userId')
+    .then(cartProducts => {
+      const orderProducts = cartProducts.cart.items.map(cartProduct => {
+        return {
+          product: cartProduct.productId._doc,
+          quantity: cartProduct.quantity,
+        }
+      })
+
+      const order = new Order({
+        user: {
+          name: req.user.name,
+          userId: req.user._id,
+        },
+        products: orderProducts,
+      })
+      return order.save()
+    })
+    .then((DBRes) => {
+      req.user.cart.items = []
+      req.user
+        .save()
+        .then(DBRes => {
+          res.redirect('/orders')
+        })
     })
     .catch(err => console.error(err))
 }

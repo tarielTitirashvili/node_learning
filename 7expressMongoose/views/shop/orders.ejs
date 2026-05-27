@@ -16,7 +16,7 @@
                                         Order Id: <%= order._id %>
                                     </h1>
                                 </header>
-                                <% order.items?.map(product=>{ %>
+                                <% order.products?.map(({product, quantity})=>{ %>
                                     <div class="card__conte nt">
                                         <div class="card__image">
                                             <img src="<%= product.imageUrl %>" alt="A Book">
@@ -27,7 +27,7 @@
                                         <p class="product__description">
                                             <%= product.description %>
                                         </p>
-                                        <strong class="centred">quantity: <%= product?.quantity %>
+                                        <strong class="centred">quantity: <%= quantity %>
                                         </strong>
                                     </div>
                                     <% }) %>
