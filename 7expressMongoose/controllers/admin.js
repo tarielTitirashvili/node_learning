@@ -11,7 +11,7 @@ const postAddProductController = (req, res, next) => {
     const { title, imageURL, description, price } = req.body
     const imageUrl = imageURL ? imageURL : 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
 
-    const product = new Product({ title, price, description, imageUrl: imageUrl })
+    const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.user._id })
     product.save()
       .then(
         result => {
@@ -27,14 +27,17 @@ const postAddProductController = (req, res, next) => {
 
 const getProductsForAdminController = (req, res, next) => {
 
-  Product.find().then((products) => {
-    console.log('products', products)
-    res.render('admin/products', {
-      docTitle: 'Admin Products',
-      products,
-      path: '/admin/products',
-    })
-  }).catch(err => console.error(err))
+  Product.find()
+    // .select('-imageUrl -_id') // for example how can we select and remove data from DB
+    .populate('userId', '-cart') // same here removes cart
+    .then((products) => {
+      // console.log('products', products)
+      res.render('admin/products', {
+        docTitle: 'Admin Products',
+        products,
+        path: '/admin/products',
+      })
+    }).catch(err => console.error(err))
 }
 
 const getEditProductController = (req, res, next) => {
