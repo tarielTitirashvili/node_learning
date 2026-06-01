@@ -8,16 +8,19 @@ const getProductsController = (req, res, next) => {
       docTitle: 'shop',
       products,
       path: '/products',
+      isLoggedIn: req.session.isLoggedIn
     })
   }).catch(err => console.error(err))
 }
 
 const getIndexController = (req, res, next) => {
   Product.find().then(products => {
+    // console.log(req.session.isLoggedIn)
     res.render('shop/index', {
       docTitle: 'shop',
       products,
       path: '/',
+      isLoggedIn: req.session.isLoggedIn
     })
   }).catch(err => console.error(err))
 
@@ -25,8 +28,7 @@ const getIndexController = (req, res, next) => {
 
 const getCartController = (req, res, next) => {
 
-  req.user
-    .populate('cart.items.productId')
+  req.user.populate('cart.items.productId')
     // .execPopulate() //! might need in some cases
     .then(cartProducts => {
       console.log(cartProducts.cart.items)
@@ -34,7 +36,8 @@ const getCartController = (req, res, next) => {
         docTitle: 'cart',
         path: '/cart',
         products: cartProducts.cart.items,
-        total: 1 //cartData.totalPrice
+        total: 1, //cartData.totalPrice
+        isLoggedIn: req.session.isLoggedIn
       })
     })
     .catch(err => console.error(err))
@@ -59,6 +62,7 @@ const postAddToCartController = (req, res, next) => {
 }
 
 const getOrdersController = (req, res, next) => {
+  // console.log(req.user)
   Order
     .find({ 'user.userId': req.user._id })
     .then(orders => {
@@ -66,7 +70,8 @@ const getOrdersController = (req, res, next) => {
       res.render('shop/orders', {
         docTitle: 'orders',
         path: '/orders',
-        orders
+        orders,
+        isLoggedIn: req.session.isLoggedIn
       })
     })
     .catch(err => console.error(err))
@@ -80,7 +85,8 @@ const getSingleProductController = (req, res, next) => {
       res.render('shop/product-details', {
         docTitle: 'orders',
         path: '/orders',
-        product
+        product,
+        isLoggedIn: req.session.isLoggedIn
       })
     }
   ).catch(err => { console.error(err) })
@@ -91,6 +97,7 @@ const getCheckoutController = (req, res, next) => {
   res.render('shop/checkout', {
     docTitle: 'checkout',
     path: '/checkout',
+    isLoggedIn: req.session.isLoggedIn
   })
 }
 

@@ -29,7 +29,7 @@
                   </p>
                 </div>
                 <div class="card__actions">
-                  <%- include('../_common/includes/add-to-cart', {product}) %>
+                  <%- include('../_common/includes/add-to-cart', {product, isLoggedIn}) %>
                   <a href="/product/<%= product._id %>" class="btn">Details</a>
 
                   <!-- <form action="/add-to-cart" method="POST">

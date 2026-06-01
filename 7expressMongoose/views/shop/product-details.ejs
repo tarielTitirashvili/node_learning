@@ -19,7 +19,7 @@
                     <p class="product__description">
                         description: <%= product?.description %>
                     </p>
-                    <%- include('../_common/includes/add-to-cart') %>
+                    <%- include('../_common/includes/add-to-cart', {isLoggedIn}) %>
                 </div>
                 <% }else{ %>
                     <h1>

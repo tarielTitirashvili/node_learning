@@ -33,7 +33,7 @@
                                     <strong class="centred">quantity: <%= quantity %></strong>
                                 </div>
                                 <div class="card__actions">
-                                    <%- include('../_common/includes/add-to-cart', {product}) %>
+                                    <%- include('../_common/includes/add-to-cart', {product, isLoggedIn}) %>
                                         <a href="/cart/delete-product/<%= product._id %>" method="POST">
                                             <button type="submit" class="btn">Delete</button>
                                         </a>

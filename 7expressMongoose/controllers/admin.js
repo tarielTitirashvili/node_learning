@@ -3,7 +3,7 @@ const mongodb = require('mongodb')
 
 const getAddProductController = (req, res, next) => {
 
-  res.render('admin/add-product', { path: '/admin/add-product', docTitle: 'Add Product' })
+  res.render('admin/add-product', { path: '/admin/add-product', docTitle: 'Add Product', isLoggedIn: req.session.isLoggedIn })
 }
 
 const postAddProductController = (req, res, next) => {
@@ -11,7 +11,7 @@ const postAddProductController = (req, res, next) => {
     const { title, imageURL, description, price } = req.body
     const imageUrl = imageURL ? imageURL : 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
 
-    const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.user._id })
+    const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.session.user._id })
     product.save()
       .then(
         result => {
@@ -36,6 +36,7 @@ const getProductsForAdminController = (req, res, next) => {
         docTitle: 'Admin Products',
         products,
         path: '/admin/products',
+        isLoggedIn: req.session.isLoggedIn
       })
     }).catch(err => console.error(err))
 }
@@ -49,7 +50,7 @@ const getEditProductController = (req, res, next) => {
       product => {
         // console.log('products', product)
         // const product = products.length ? products[0] : []
-        res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product })
+        res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product, isLoggedIn: req.session.isLoggedIn })
       }
     )
     .catch(err => console.error(err))
