@@ -56,17 +56,17 @@ app.use(notFoundRouter)
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    User.find().then(users => {
-      if (!users?.length) {
-        const user = new User({
-          name: 'tariel',
-          email: 'tariel@gmail.com',
-          cart: {
-            items: []
-          }
-        })
-        user.save()
-      }
-    })
+    // User.find().then(users => {
+    //   if (!users?.length) {
+    //     const user = new User({
+    //       name: 'tariel',
+    //       email: 'tariel@gmail.com',
+    //       cart: {
+    //         items: []
+    //       }
+    //     })
+    //     user.save()
+    //   }
+    // })
     app.listen(9000)
   }).catch(err => console.error(err))

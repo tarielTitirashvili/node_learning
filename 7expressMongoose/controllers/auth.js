@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const bcrypt = require('bcryptjs')
 
 const getLoginPageController = (req, res, next) => {
   // const isLoggedIn = req.get('Cookie')?.split('=')?.[1] === 'true'
@@ -11,16 +12,32 @@ const getLoginPageController = (req, res, next) => {
 }
 
 const postLoginRequestController = (req, res, next) => {
-  // res.setHeader('Set-Cookie', 'loggedIn=true; HttpOnly')
+  const { email, password } = req.body
   User
-    .findById('6a160e4a7bd99ee1ac98f6b4')
+    .findOne({ email: email })
     .then(user => {
-      req.session.userId = user._id.toString()
-      req.session.isLoggedIn = true
-      req.session.save((err) => {
-        console.log(err)
-        res.redirect('/')
-      })
+      if (!user) {
+        res.redirect('/login')
+      }
+      bcrypt.compare(password, user.password)
+        .then(correctPassword => {
+          if (correctPassword) {
+            req.session.userId = user._id.toString()
+            req.session.isLoggedIn = true
+            return req.session.save((err) => {
+              console.log(err)
+              res.redirect('/')
+            })
+          } else {
+            res.redirect('/login')
+          }
+        })
+        .catch( //! if something goes wrong not wrong password
+          err => {
+            console.log(error)
+            res.redirect('/login')
+          }
+        )
     })
     .catch(err => console.error(err))
 }
@@ -31,8 +48,46 @@ const postLogOutRequestController = (req, res, next) => {
   })
 }
 
+const getSignupPageController = (req, res, next) => {
+  res.render('shop/signup', {
+    path: 'null',
+    docTitle: 'Page Not Found',
+    isLoggedIn: req.session.isLoggedIn
+  })
+}
+
+const postSignupRequestController = (req, res, next) => {
+  const email = req.body.email
+  const password = req.body.password
+  const confirmPassword = req.body.confirmPassword
+  if (password !== confirmPassword) {
+    res.redirect('signup')
+  }
+
+  User.findOne({ email })
+    .then(
+      userDoc => {
+        if (userDoc) {
+          return res.redirect('/signup')
+        } else {
+          return bcrypt.hash(password, 12).then(hashedPassword => {
+            const user = new User({ email, password: hashedPassword, cart: { items: [] } })
+            user.save()
+              .then(
+                result => {
+                  return res.redirect('/')
+                }
+              )
+          })
+        }
+      }
+    )
+}
+
 module.exports = {
   getLoginPageController,
   postLoginRequestController,
-  postLogOutRequestController
+  postLogOutRequestController,
+  getSignupPageController,
+  postSignupRequestController,
 }
