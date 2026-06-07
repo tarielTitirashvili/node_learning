@@ -14,8 +14,13 @@
             <label for="password">password</label>
             <input type="text" name="password" id="password">
           </div>
-          <input type="hidden" name="_csrf" value="<%= csurfToken %>" />
-          <button type="submit" class="btn">Login</button>
+          <% if(errorMessage) { %>
+            <div>
+              <%= errorMessage %>
+            </div>
+            <% } %>
+              <input type="hidden" name="_csrf" value="<%= csurfToken %>" />
+              <button type="submit" class="btn">Login</button>
         </form>
       </div>
   </body>

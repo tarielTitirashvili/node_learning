@@ -6,7 +6,7 @@ const path = require('path')
 const mongoose = require('mongoose')
 const User = require('./models/user')
 const csurf = require('csurf')
-
+const flash = require('connect-flash')
 // my code
 const adminRouter = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
@@ -35,6 +35,7 @@ const csurfProtection = csurf()
 app.use(session({ secret: 'Tariel', resave: false, saveUninitialized: false, store: mongoSessionStore }))
 
 app.use(csurfProtection)
+app.use(flash())
 
 app.use((req, res, next) => {
   if (req.session.isLoggedIn && req.session.userId) {

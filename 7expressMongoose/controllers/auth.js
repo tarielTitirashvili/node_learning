@@ -6,9 +6,17 @@ const bcrypt = require('bcryptjs')
 const getLoginPageController = (req, res, next) => {
   // const isLoggedIn = req.get('Cookie')?.split('=')?.[1] === 'true'
   // console.log(req.session)
+  let errorMessage = req.flash('error')
+  if (errorMessage.length) {
+    errorMessage = errorMessage[0]
+  } else {
+    errorMessage = null
+  }
+
   res.render('shop/login', {
     path: 'null',
     docTitle: 'Page Not Found',
+    errorMessage: errorMessage
   })
 }
 
@@ -18,7 +26,8 @@ const postLoginRequestController = (req, res, next) => {
     .findOne({ email: email })
     .then(user => {
       if (!user) {
-        res.redirect('/login')
+        req.flash('error', 'Invalid email or password')
+        return res.redirect('/login')
       }
       bcrypt.compare(password, user.password)
         .then(correctPassword => {
@@ -27,6 +36,7 @@ const postLoginRequestController = (req, res, next) => {
             req.session.isLoggedIn = true
             return req.session.save((err) => {
               console.log(err)
+              req.flash('error', 'Invalid email or password')
               res.redirect('/')
             })
           } else {
@@ -50,9 +60,17 @@ const postLogOutRequestController = (req, res, next) => {
 }
 
 const getSignupPageController = (req, res, next) => {
+  let errorMessage = req.flash('error')
+  if (errorMessage.length) {
+    errorMessage = errorMessage[0]
+  } else {
+    errorMessage = null
+  }
+
   res.render('shop/signup', {
     path: 'null',
     docTitle: 'Page Not Found',
+    errorMessage
   })
 }
 
@@ -68,6 +86,7 @@ const postSignupRequestController = (req, res, next) => {
     .then(
       userDoc => {
         if (userDoc) {
+          req.flash('error', 'email is already in use please use other one.')
           return res.redirect('/signup')
         } else {
           return bcrypt.hash(password, 12).then(hashedPassword => {
