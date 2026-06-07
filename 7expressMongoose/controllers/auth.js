@@ -1,4 +1,6 @@
 const User = require('../models/user')
+// ! because off bcrypt we cant get initial string it transforms string only one way and for example:
+// ! if you have 2 is result off using % operator by 3 it can be from 5, 8, 11, 14, 17, ...
 const bcrypt = require('bcryptjs')
 
 const getLoginPageController = (req, res, next) => {
