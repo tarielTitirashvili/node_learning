@@ -2,6 +2,8 @@ const User = require('../models/user')
 // ! because off bcrypt we cant get initial string it transforms string only one way and for example:
 // ! if you have 2 is result off using % operator by 3 it can be from 5, 8, 11, 14, 17, ...
 const bcrypt = require('bcryptjs')
+const { mailSender } = require('../util/mailSender')
+
 
 const getLoginPageController = (req, res, next) => {
   // const isLoggedIn = req.get('Cookie')?.split('=')?.[1] === 'true'
@@ -94,7 +96,19 @@ const postSignupRequestController = (req, res, next) => {
             user.save()
               .then(
                 result => {
-                  return res.redirect('/')
+                  res.redirect('/')
+                  return mailSender(
+                    email,
+                    {
+                      subject: 'Registered'
+                    }
+                  )
+                    .then(mailRes => {
+                      console.log(mailRes)
+                      return res.redirect('/')
+                    }).catch(err => {
+                      console.error('mailError', err)
+                    })
                 }
               )
           })
