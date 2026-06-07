@@ -15,7 +15,7 @@ const getLoginPageController = (req, res, next) => {
     errorMessage = null
   }
 
-  res.render('shop/login', {
+  res.render('auth/login', {
     path: 'null',
     docTitle: 'Page Not Found',
     errorMessage: errorMessage
@@ -69,7 +69,7 @@ const getSignupPageController = (req, res, next) => {
     errorMessage = null
   }
 
-  res.render('shop/signup', {
+  res.render('auth/signup', {
     path: 'null',
     docTitle: 'Page Not Found',
     errorMessage
