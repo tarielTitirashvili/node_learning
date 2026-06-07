@@ -27,6 +27,7 @@
                 <% } else { %>
                     <li class="main-header__item">
                         <form action="/logout" method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csurfToken %>" />
                             <button type="submit" class="btn">LogOut</button>
                         </form>
                     </li>

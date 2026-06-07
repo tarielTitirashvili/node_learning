@@ -5,6 +5,7 @@ const path = require('path')
 // const { mongoConnect } = require('./util/database')
 const mongoose = require('mongoose')
 const User = require('./models/user')
+const csurf = require('csurf')
 
 // my code
 const adminRouter = require('./routes/admin')
@@ -28,7 +29,12 @@ const mongoSessionStore = new MongoDBSessionStore({
   uri: MONGO_URI,
   collection: 'sessions',
 })
+
+const csurfProtection = csurf()
+
 app.use(session({ secret: 'Tariel', resave: false, saveUninitialized: false, store: mongoSessionStore }))
+
+app.use(csurfProtection)
 
 app.use((req, res, next) => {
   if (req.session.isLoggedIn && req.session.userId) {
@@ -45,6 +51,12 @@ app.use((req, res, next) => {
   } else {
     next()
   }
+})
+
+app.use((req, res, next) => {
+  res.locals.isLoggedIn = req.session.isLoggedIn,
+  res.locals.csurfToken = req.csrfToken()
+  next()
 })
 
 app.use('/admin', adminRouter)

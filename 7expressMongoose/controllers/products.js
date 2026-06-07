@@ -20,7 +20,6 @@ const getIndexController = (req, res, next) => {
       docTitle: 'shop',
       products,
       path: '/',
-      isLoggedIn: req.session.isLoggedIn
     })
   }).catch(err => console.error(err))
 
@@ -130,7 +129,7 @@ const postOrderController = (req, res, next) => {
 
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user._id,
         },
         products: orderProducts,
