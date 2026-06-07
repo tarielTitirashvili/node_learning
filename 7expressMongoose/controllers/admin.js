@@ -3,7 +3,7 @@ const mongodb = require('mongodb')
 
 const getAddProductController = (req, res, next) => {
 
-  res.render('admin/add-product', { path: '/admin/add-product', docTitle: 'Add Product', isLoggedIn: req.session.isLoggedIn })
+  res.render('admin/add-product', { path: '/admin/add-product', docTitle: 'Add Product'})
 }
 
 const postAddProductController = (req, res, next) => {
@@ -36,7 +36,6 @@ const getProductsForAdminController = (req, res, next) => {
         docTitle: 'Admin Products',
         products,
         path: '/admin/products',
-        isLoggedIn: req.session.isLoggedIn
       })
     }).catch(err => console.error(err))
 }
@@ -50,7 +49,7 @@ const getEditProductController = (req, res, next) => {
       product => {
         // console.log('products', product)
         // const product = products.length ? products[0] : []
-        res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product, isLoggedIn: req.session.isLoggedIn })
+        res.render('admin/edit-product', { path: '/admin/add-product', docTitle: 'Add Product', product })
       }
     )
     .catch(err => console.error(err))

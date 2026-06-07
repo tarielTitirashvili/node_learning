@@ -9,7 +9,6 @@ const getLoginPageController = (req, res, next) => {
   res.render('shop/login', {
     path: 'null',
     docTitle: 'Page Not Found',
-    isLoggedIn: req.session.isLoggedIn
   })
 }
 
@@ -54,7 +53,6 @@ const getSignupPageController = (req, res, next) => {
   res.render('shop/signup', {
     path: 'null',
     docTitle: 'Page Not Found',
-    isLoggedIn: req.session.isLoggedIn
   })
 }
 

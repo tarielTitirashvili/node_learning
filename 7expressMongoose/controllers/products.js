@@ -8,7 +8,6 @@ const getProductsController = (req, res, next) => {
       docTitle: 'shop',
       products,
       path: '/products',
-      isLoggedIn: req.session.isLoggedIn
     })
   }).catch(err => console.error(err))
 }
@@ -36,7 +35,6 @@ const getCartController = (req, res, next) => {
         path: '/cart',
         products: cartProducts.cart.items,
         total: 1, //cartData.totalPrice
-        isLoggedIn: req.session.isLoggedIn
       })
     })
     .catch(err => console.error(err))
@@ -70,7 +68,6 @@ const getOrdersController = (req, res, next) => {
         docTitle: 'orders',
         path: '/orders',
         orders,
-        isLoggedIn: req.session.isLoggedIn
       })
     })
     .catch(err => console.error(err))
@@ -85,7 +82,6 @@ const getSingleProductController = (req, res, next) => {
         docTitle: 'orders',
         path: '/orders',
         product,
-        isLoggedIn: req.session.isLoggedIn
       })
     }
   ).catch(err => { console.error(err) })
@@ -96,7 +92,6 @@ const getCheckoutController = (req, res, next) => {
   res.render('shop/checkout', {
     docTitle: 'checkout',
     path: '/checkout',
-    isLoggedIn: req.session.isLoggedIn
   })
 }
 
