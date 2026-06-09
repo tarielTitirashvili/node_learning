@@ -11,11 +11,10 @@ const postAddProductController = (req, res, next) => {
     const { title, imageURL, description, price } = req.body
     const imageUrl = imageURL ? imageURL : 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
 
-    const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.session.user._id })
+    const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.session.userId })
     product.save()
       .then(
         result => {
-          console.log('result', result)
           res.redirect('/admin/add-product')
         }
       )
@@ -27,7 +26,7 @@ const postAddProductController = (req, res, next) => {
 
 const getProductsForAdminController = (req, res, next) => {
 
-  Product.find()
+  Product.find({userId : req.session.userId})
     // .select('-imageUrl -_id') // for example how can we select and remove data from DB
     .populate('userId', '-cart') // same here removes cart
     .then((products) => {
@@ -65,6 +64,9 @@ const postEditProductController = (req, res, next) => {
 
   Product.findById(pId)
     .then(product => {
+      if(product.userId.toString() !== req.session.userId){
+        return res.redirect('/')
+      }
       product.title = pTitle
       product.imageUrl = pImageURL
       product.price = pPrice
@@ -73,7 +75,7 @@ const postEditProductController = (req, res, next) => {
       return product.save()
     })
     .then(dbRes => {
-      console.log('successResponse', dbRes)
+      // console.log('successResponse', dbRes)
       res.redirect('/admin/products')
     })
     .catch(err => console.error(err))
@@ -84,7 +86,7 @@ const postEditProductController = (req, res, next) => {
 const deleteProductController = (req, res, next) => {
   const productId = req.body.id
 
-  Product.findByIdAndDelete(productId)
+  Product.findOneAndDelete({_id: productId, userId: req.session.userId})
     .then(dbRes => {
       // console.log('error Success Message DB', dbRes)
       res.redirect('/admin/products')
