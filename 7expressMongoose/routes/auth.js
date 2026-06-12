@@ -13,6 +13,7 @@ authRouter.post(
   [
     check('email')
       .isEmail()
+      .normalizeEmail()
       .custom(
         (value, { req }) => {
           return User.findOne({ email: value })
@@ -27,6 +28,7 @@ authRouter.post(
         }
       ),
     body('password')
+      .trim()
       .isLength({
         min: 6,
       })
@@ -46,6 +48,7 @@ authRouter.post(
     check('email')
       .isEmail()
       .withMessage('enter valid email!')
+      .normalizeEmail()
       .custom((value, { req }) => {
         return User.findOne({ email: value })
           .then(user => {
@@ -56,12 +59,14 @@ authRouter.post(
       })
     ,
     body('password', 'password should be from 6 to 32 characters in length.')
+      .trim()
       .isLength({
         min: 6,
         max: 32
       })
       .isAlphanumeric(),
     body('confirmPassword')
+      .trim()
       .custom((value, { req }) => {
         if (value !== req.body.password) {
           throw Error('tariel\'s error not not equal password and confirm password!')
