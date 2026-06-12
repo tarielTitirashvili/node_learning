@@ -21,7 +21,8 @@ const getLoginPageController = (req, res, next) => {
     path: '/login',
     docTitle: 'Login',
     errorMessage: errorMessage,
-    prevData: null
+    prevData: null,
+    validationErrors: null
   })
 }
 

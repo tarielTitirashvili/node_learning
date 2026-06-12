@@ -13,7 +13,7 @@ authRouter.post(
   [
     check('email')
       .isEmail()
-      .normalizeEmail()
+      // .normalizeEmail() //! dumb normalizer
       .custom(
         (value, { req }) => {
           return User.findOne({ email: value })
@@ -48,7 +48,6 @@ authRouter.post(
     check('email')
       .isEmail()
       .withMessage('enter valid email!')
-      .normalizeEmail()
       .custom((value, { req }) => {
         return User.findOne({ email: value })
           .then(user => {

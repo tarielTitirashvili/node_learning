@@ -10,19 +10,24 @@
                 <form class="product-form" action="/admin/add-product" method="POST">
                     <div class="form-control">
                         <label for="title">Title</label>
-                        <input type="text" name="title" id="title">
+                        <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>"
+                            value="<%= product ? product?.title : '' %>" type="text" name="title" id="title">
                     </div>
                     <div class="form-control">
                         <label for="imageURL">image URL</label>
-                        <input type="text" name="imageURL" id="imageURL">
+                        <input class="<%= validationErrors.find(e => e.path === 'imageURL') ? 'invalid' : '' %>"
+                            value="<%= product ? product?.imageURL : '' %>" type="text" name="imageURL" id="imageURL">
                     </div>
                     <div class="form-control">
                         <label for="price">price</label>
-                        <input type="numeric" name="price" id="price">
+                        <input class="<%= validationErrors.find(e => e.path === 'price') ? 'invalid' : '' %>"
+                            value="<%= product ? product?.price : '' %>" type="numeric" name="price" id="price">
                     </div>
                     <div class="form-control">
                         <label for="description">description</label>
-                        <input type="text" name="description" id="description">
+                        <input class="<%= validationErrors.find(e => e.path === 'description') ? 'invalid' : '' %>"
+                            value="<%= product ? product?.description : '' %>" type="text" name="description"
+                            id="description">
                     </div>
                     <input type="hidden" name="_csrf" value="<%= csurfToken %>" />
                     <button class="btn" type="submit">Add Product</button>
