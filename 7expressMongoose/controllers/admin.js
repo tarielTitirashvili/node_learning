@@ -7,7 +7,7 @@ const getAddProductController = (req, res, next) => {
     path: '/admin/add-product',
     docTitle: 'Add Product',
     validationErrors: [],
-    prevData: []
+    product: []
   })
 }
 
@@ -64,8 +64,9 @@ const getEditProductController = (req, res, next) => {
         // console.log('products', product)
         // const product = products.length ? products[0] : []
         res.render('admin/edit-product', {
-          path: '/admin/add-product',
+          path: 'admin/edit-product',
           docTitle: 'Add Product',
+          validationErrors: [],
           product
         })
       }
@@ -82,10 +83,11 @@ const postEditProductController = (req, res, next) => {
   const pPrice = req.body.price
 
   const errors = validationResult(req)
+  console.log(errors)
   if (!errors.isEmpty()) {
-    return res.status(422).render('admin/add-product', {
+    return res.status(422).render('admin/edit-product', {
       path: 'admin/edit-product',
-      docTitle: 'Add Product',
+      docTitle: 'Edit Product',
       validationErrors: errors.array(),
       product: req.body,
     })

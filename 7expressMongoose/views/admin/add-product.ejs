@@ -16,7 +16,7 @@
                     <div class="form-control">
                         <label for="imageURL">image URL</label>
                         <input class="<%= validationErrors.find(e => e.path === 'imageURL') ? 'invalid' : '' %>"
-                            value="<%= product ? product?.imageURL : '' %>" type="text" name="imageURL" id="imageURL">
+                            value="<%= product ? product?.imageURL || '' : '' %>" type="text" name="imageURL" id="imageURL">
                     </div>
                     <div class="form-control">
                         <label for="price">price</label>

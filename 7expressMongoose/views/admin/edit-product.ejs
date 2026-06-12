@@ -10,19 +10,24 @@
                 <form class="product-form" action="/admin/edit-product" method="POST">
                     <div class="form-control">
                         <label for="title">Title</label>
-                        <input type="text" name="title" value="<%= product.title %>" id="title">
+                        <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>"
+                            type="text" name="title" value="<%= product.title %>" id="title">
                     </div>
                     <div class="form-control">
                         <label for="imageURL">image URL</label>
-                        <input type="text" name="imageURL" value="<%= product.imageUrl %>" id="imageURL">
+                        <input class="<%= validationErrors.find(e => e.path === 'imageURL') ? 'invalid' : '' %>"
+                            type="text" name="imageURL" value="<%= product.imageUrl || product.imageURL %>"
+                            id="imageURL">
                     </div>
                     <div class="form-control">
                         <label for="price">price</label>
-                        <input type="numeric" value="<%= product.price %>"  name="price" id="price">
+                        <input class="<%= validationErrors.find(e => e.path === 'price') ? 'invalid' : '' %>"
+                            type="numeric" value="<%= product.price %>" name="price" id="price">
                     </div>
                     <div class="form-control">
                         <label for="description">description</label>
-                        <input type="text" value="<%= product.description %>"  name="description" id="description">
+                        <input class="<%= validationErrors.find(e => e.path === 'description') ? 'invalid' : '' %>"
+                            type="text" value="<%= product.description %>" name="description" id="description">
                     </div>
 
                     <input type="text" name="id" hidden value="<%= product._id %>">
