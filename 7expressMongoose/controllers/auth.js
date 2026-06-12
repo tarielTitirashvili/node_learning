@@ -4,6 +4,7 @@ const User = require('../models/user')
 // ! if you have 2 is result off using % operator by 3 it can be from 5, 8, 11, 14, 17, ...
 const bcrypt = require('bcryptjs')
 const { mailSender } = require('../util/mailSender')
+const { validationResult } = require('express-validator')
 
 
 const getLoginPageController = (req, res, next) => {
@@ -17,42 +18,53 @@ const getLoginPageController = (req, res, next) => {
   }
 
   res.render('auth/login', {
-    path: 'null',
+    path: '/login',
     docTitle: 'Login',
-    errorMessage: errorMessage
+    errorMessage: errorMessage,
+    prevData: null
   })
 }
 
 const postLoginRequestController = (req, res, next) => {
-  const { email, password } = req.body
-  User
-    .findOne({ email: email })
-    .then(user => {
-      if (!user) {
-        req.flash('error', 'Invalid email or password')
-        return res.redirect('/login')
-      }
-      bcrypt.compare(password, user.password)
-        .then(correctPassword => {
-          if (correctPassword) {
-            req.session.userId = user._id.toString()
-            req.session.isLoggedIn = true
-            return req.session.save((err) => {
-              console.log(err)
-              req.flash('error', 'Invalid email or password')
-              res.redirect('/')
-            })
-          } else {
-            res.redirect('/login')
-          }
-        })
-        .catch( //! if something goes wrong not wrong password
-          err => {
-            console.log(error)
-            res.redirect('/login')
-          }
-        )
+  const { password } = req.body
+  const errors = validationResult(req)
+
+  if (!errors.isEmpty()) {
+    return res.render('auth/login', {
+      path: '/login',
+      docTitle: 'Login',
+      errorMessage: errors.array()[0].msg,
+      prevData: req.body,
+      validationErrors: 'error'
     })
+  }
+
+  bcrypt.compare(password, req.session.loginIdentifiedUserPassword)
+    .then(correctPassword => {
+      if (correctPassword) {
+        req.session.userId = req.session.loginIdentifiedUserId
+        req.session.isLoggedIn = true
+        return req.session.save((err) => {
+          console.log(err)
+          req.flash('error', 'Invalid email or password')
+          res.redirect('/')
+        })
+      } else {
+        return res.render('auth/login', {
+          path: '/login',
+          docTitle: 'Login',
+          errorMessage: errors.array()[0].msg,
+          prevData: req.body,
+          validationErrors: 'error'
+        })
+      }
+    })
+    .catch( //! if something goes wrong not wrong password
+      err => {
+        console.log(err)
+        res.redirect('/login')
+      }
+    )
     .catch(err => console.error(err))
 }
 
@@ -71,51 +83,54 @@ const getSignupPageController = (req, res, next) => {
   }
 
   res.render('auth/signup', {
-    path: 'null',
+    path: 'auth/signup',
     docTitle: 'Sign Up',
-    errorMessage
+    errorMessage,
+    prevData: req.body,
+    validationErrors: []
   })
 }
 
 const postSignupRequestController = (req, res, next) => {
+  const errors = validationResult(req)
   const email = req.body.email
   const password = req.body.password
-  const confirmPassword = req.body.confirmPassword
-  if (password !== confirmPassword) {
-    res.redirect('signup')
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render('auth/signup', {
+      path: 'auth/signup',
+      docTitle: 'Sign Up',
+      errorMessage: errors.array()[0].msg,
+      prevData: req.body,
+      validationErrors: errors.array()
+    })
   }
 
-  User.findOne({ email })
-    .then(
-      userDoc => {
-        if (userDoc) {
-          req.flash('error', 'email is already in use please use other one.')
-          return res.redirect('/signup')
-        } else {
-          return bcrypt.hash(password, 12).then(hashedPassword => {
-            const user = new User({ email, password: hashedPassword, cart: { items: [] } })
-            user.save()
-              .then(
-                result => {
-                  res.redirect('/')
-                  return mailSender(
-                    email,
-                    {
-                      subject: 'Registered'
-                    }
-                  )
-                    .then(mailRes => {
-                      console.log(mailRes)
-                      return res.redirect('/')
-                    }).catch(err => {
-                      console.error('mailError', err)
-                    })
-                }
-              )
-          })
+  return bcrypt.hash(password, 12).then(hashedPassword => {
+    const user = new User({ email, password: hashedPassword, cart: { items: [] } })
+    user.save()
+      .then(
+        result => {
+          res.redirect('/')
+          return mailSender(
+            email,
+            {
+              subject: 'Registered'
+            }
+          )
+            .then(mailRes => {
+              // console.log(mailRes)
+              return res.redirect('/')
+            }).catch(err => {
+              console.error('mailError', err)
+            })
         }
-      }
-    )
+      ).catch(err => {
+        console.error('mailError', err)
+      })
+  }).catch(err => {
+    console.error('mailError', err)
+  })
 }
 
 const getResetPasswordPageController = (req, res, next) => {
