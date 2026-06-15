@@ -36,6 +36,9 @@ const postAddProductController = (req, res, next) => {
 
   } catch (e) {
     console.error('error ', e)
+    const error = new Error(e)
+    error.httpStatusCode = 500
+    next(error)
   }
 }
 
@@ -83,7 +86,7 @@ const postEditProductController = (req, res, next) => {
   const pPrice = req.body.price
 
   const errors = validationResult(req)
-  console.log(errors)
+
   if (!errors.isEmpty()) {
     return res.status(422).render('admin/edit-product', {
       path: 'admin/edit-product',
@@ -109,9 +112,16 @@ const postEditProductController = (req, res, next) => {
       // console.log('successResponse', dbRes)
       res.redirect('/admin/products')
     })
-    .catch(err => console.error(err))
-    .catch(err => console.error(err))
-
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const deleteProductController = (req, res, next) => {
@@ -122,8 +132,11 @@ const deleteProductController = (req, res, next) => {
       // console.log('error Success Message DB', dbRes)
       res.redirect('/admin/products')
     })
-    .catch(err => console.error(err))
-
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
   // Product.delete(productId)
 
 }

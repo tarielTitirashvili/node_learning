@@ -42,12 +42,15 @@ app.use((req, res, next) => {
     User
       .findById(req.session.userId)
       .then(user => {
+        if (!user) {
+          return next()
+        }
         req.user = user
         next()
       })
       .catch(err => {
         console.error(err)
-        next()
+        throw new Error('Users Table Error' + err)
       })
   } else {
     next()
@@ -56,7 +59,7 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
   res.locals.isLoggedIn = req.session.isLoggedIn,
-  res.locals.csurfToken = req.csrfToken()
+    res.locals.csurfToken = req.csrfToken()
   next()
 })
 
@@ -64,6 +67,17 @@ app.use('/admin', adminRouter)
 app.use(authRouter)
 app.use(shopRoutes)
 app.use(notFoundRouter)
+
+app.use((error, req, res, next) => {
+  // ! if we will call next(error) somewhere in app
+  // ! all other middlewares will be skipped and we will be here
+  console.log('Tariel\'s Errors', error)
+  res.status(500).render('500Error', {
+    path: '500Error',
+    docTitle: 'Internal Server Error',
+    isLoggedIn: req.session.isLoggedIn
+  })
+})
 
 
 mongoose

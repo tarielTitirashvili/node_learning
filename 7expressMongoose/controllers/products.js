@@ -9,7 +9,12 @@ const getProductsController = (req, res, next) => {
       products,
       path: '/products',
     })
-  }).catch(err => console.error(err))
+  })
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const getIndexController = (req, res, next) => {
@@ -20,7 +25,12 @@ const getIndexController = (req, res, next) => {
       products,
       path: '/',
     })
-  }).catch(err => console.error(err))
+  })
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 
 }
 
@@ -37,7 +47,11 @@ const getCartController = (req, res, next) => {
         total: 1, //cartData.totalPrice
       })
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const postAddToCartController = (req, res, next) => {
@@ -53,9 +67,17 @@ const postAddToCartController = (req, res, next) => {
           console.log('DBRes', DBRes)
           res.redirect('/cart')
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+          const error = new Error(err)
+          error.httpStatusCode = 500
+          next(error)
+        })
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const getOrdersController = (req, res, next) => {
@@ -70,7 +92,11 @@ const getOrdersController = (req, res, next) => {
         orders,
       })
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const getSingleProductController = (req, res, next) => {
@@ -84,7 +110,12 @@ const getSingleProductController = (req, res, next) => {
         product,
       })
     }
-  ).catch(err => { console.error(err) })
+  )
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const getCheckoutController = (req, res, next) => {
@@ -139,7 +170,11 @@ const postOrderController = (req, res, next) => {
           res.redirect('/orders')
         })
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 module.exports = {

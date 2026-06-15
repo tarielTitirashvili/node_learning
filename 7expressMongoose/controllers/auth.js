@@ -66,7 +66,11 @@ const postLoginRequestController = (req, res, next) => {
         res.redirect('/login')
       }
     )
-    .catch(err => console.error(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const postLogOutRequestController = (req, res, next) => {
@@ -122,15 +126,22 @@ const postSignupRequestController = (req, res, next) => {
             .then(mailRes => {
               // console.log(mailRes)
               return res.redirect('/')
-            }).catch(err => {
-              console.error('mailError', err)
+            })
+            .catch(err => {
+              const error = new Error(err)
+              error.httpStatusCode = 500
+              next(error)
             })
         }
       ).catch(err => {
-        console.error('mailError', err)
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        next(error)
       })
   }).catch(err => {
-    console.error('mailError', err)
+    const error = new Error(err)
+    error.httpStatusCode = 500
+    next(error)
   })
 }
 
@@ -194,7 +205,9 @@ const postResetPasswordController = (req, res, next) => {
           }
         )
         .catch(err => {
-          console.error(err)
+          const error = new Error(err)
+          error.httpStatusCode = 500
+          next(error)
         })
     }
   })
@@ -224,7 +237,11 @@ const getResetPasswordSessionPageController = (req, res, next) => {
         token: token
       })
     })
-    .catch(err => console.error(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const postResetPasswordSessionController = (req, res, next) => {
@@ -249,7 +266,9 @@ const postResetPasswordSessionController = (req, res, next) => {
           )
       })
       .catch(err => {
-        console.error(err)
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        next(error)
       })
   } else {
     res.redirect(`reset-password/${token}`)

@@ -7,4 +7,15 @@ const getNotFoundController = (req, res, next) => {
   })
 }
 
-module.exports = getNotFoundController
+const getServerErrorPageController = (req, res, next) => {
+  res.status(500).render('500Error', {
+    path: '500Error',
+    docTitle: 'Internal Server Error',
+    isLoggedIn: req.session.isLoggedIn
+  })
+}
+
+module.exports = {
+  getNotFoundController,
+  getServerErrorPageController
+}
