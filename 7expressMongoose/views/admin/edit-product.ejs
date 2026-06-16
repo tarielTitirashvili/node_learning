@@ -7,17 +7,21 @@
         <%- include('../_common/includes/header') %>
 
             <main>
-                <form class="product-form" action="/admin/edit-product" method="POST">
+                <form class="product-form" action="/admin/edit-product" method="POST" enctype="multipart/form-data">
                     <div class="form-control">
                         <label for="title">Title</label>
                         <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>"
                             type="text" name="title" value="<%= product.title %>" id="title">
                     </div>
-                    <div class="form-control">
+                    <!-- <div class="form-control">
                         <label for="imageURL">image URL</label>
                         <input class="<%= validationErrors.find(e => e.path === 'imageURL') ? 'invalid' : '' %>"
-                            type="text" name="imageURL" value="<%= product.imageUrl || product.imageURL %>"
+                            value="<%= product ? product?.imageURL || '' : '' %>" type="text" name="imageURL"
                             id="imageURL">
+                    </div> -->
+                    <div class="form-control">
+                        <label for="image">Image</label>
+                        <input type="file" name="image" id="image">
                     </div>
                     <div class="form-control">
                         <label for="price">price</label>

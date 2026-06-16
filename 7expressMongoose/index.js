@@ -15,16 +15,37 @@ const rootDir = require('./util/path')
 const authRouter = require('./routes/auth')
 const session = require('express-session')
 const MongoDBSessionStore = require('connect-mongodb-session')(session)
+const multer = require('multer')
 
 const MONGO_URI = 'mongodb+srv://tarielTitirashvili:xdGwE0V00yyYVQhK@nodeshopapp.1b9bnle.mongodb.net/shop?appName=nodeShopApp'
 
 const app = express()
 // console.log('process.env.password', process.env)
+
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    cb(null, true) //! second param allows to store file
+  } else {
+    cb(null, false)
+  }
+}
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'images')
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + '-' + file.originalname)
+  },
+})
+
+
 app.set('view engine', 'ejs')
 app.set('views', 'views')
 
 app.use(express.static(path.join(rootDir, 'public')))
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(multer({ storage: fileStorage, fileFilter }).single('image'))
+
 const mongoSessionStore = new MongoDBSessionStore({
   uri: MONGO_URI,
   collection: 'sessions',

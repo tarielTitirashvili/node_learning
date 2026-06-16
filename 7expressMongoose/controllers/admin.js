@@ -13,6 +13,16 @@ const getAddProductController = (req, res, next) => {
 
 const postAddProductController = (req, res, next) => {
   const errors = validationResult(req)
+  const image = req?.file
+  if (!image) {
+    return res.status(422).render('admin/add-product', {
+      path: 'admin/add-product',
+      docTitle: 'Add Product',
+      validationErrors: ['Attached file is not an image'],
+      product: req.body
+    })
+  }
+  
   if (!errors.isEmpty()) {
     return res.status(422).render('admin/add-product', {
       path: 'admin/add-product',
@@ -21,10 +31,10 @@ const postAddProductController = (req, res, next) => {
       product: req.body
     })
   }
-
+  
   try {
-    const { title, imageURL, description, price } = req.body
-    const imageUrl = imageURL ? imageURL : 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
+    const { title, description, price } = req.body
+    const imageUrl = image.path
 
     const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.session.userId })
     product.save()
@@ -84,6 +94,7 @@ const postEditProductController = (req, res, next) => {
   const pImageURL = req.body.imageURL || 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
   const pDescription = req.body.description
   const pPrice = req.body.price
+  const image = req.file
 
   const errors = validationResult(req)
 
@@ -102,9 +113,12 @@ const postEditProductController = (req, res, next) => {
         return res.redirect('/')
       }
       product.title = pTitle
-      product.imageUrl = pImageURL
+      // product.imageUrl = pImageURL
       product.price = pPrice
       product.description = pDescription
+      if(image){
+        product.imageUrl = image.path
+      }
 
       return product.save()
     })

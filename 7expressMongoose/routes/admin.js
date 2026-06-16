@@ -16,9 +16,7 @@ productValidation = [
   body('imageURL')
     .trim()
     .isLength({ min: 0, max: 800 })
-    .withMessage('can be from 3 to 800 characters')
-    .isURL()
-    .withMessage('not valid URL!'),
+    .withMessage('can be from 3 to 800 characters'),
 
   body('price')
     .trim()
