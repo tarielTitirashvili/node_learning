@@ -15,6 +15,7 @@
                                     <h1 class="product__title">
                                         Order Id: <%= order._id %>
                                     </h1>
+                                    <a href="/order-invoice/<%= order._id %>">Download Invoice</a>
                                 </header>
                                 <% order.products?.map(({product, quantity})=>{ %>
                                     <div class="card__conte nt">

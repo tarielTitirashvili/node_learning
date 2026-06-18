@@ -1,6 +1,9 @@
 const Order = require('../models/order')
 const Product = require('../models/product')
 // const User = require('../models/user')
+const fs = require('fs')
+const path = require('path')
+const PdfDocument = require('pdfkit')
 
 const getProductsController = (req, res, next) => {
   Product.find().then(products => {
@@ -81,11 +84,11 @@ const postAddToCartController = (req, res, next) => {
 }
 
 const getOrdersController = (req, res, next) => {
-  // console.log(req.user)
+  // console.log(req.user._id)
   Order
     .find({ 'user.userId': req.user._id })
     .then(orders => {
-      console.log('orders.orderItem', orders[0].products)
+      // console.log('orders.orderItem', orders)
       res.render('shop/orders', {
         docTitle: 'orders',
         path: '/orders',
@@ -177,6 +180,42 @@ const postOrderController = (req, res, next) => {
     })
 }
 
+const getDownloadOrderInvoice = (req, res, next) => {
+  const orderId = req.params.orderId
+
+  Order.findById(orderId)
+    .then(order => {
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return next(new Error('Unauthorized.'))
+      }
+      if (!order) {
+        return next(new Error('No order found.'))
+      }
+      const invoiceName = 'invoice-' + orderId + '.pdf'
+      const invoicePath = path.join('data', 'invoices', invoiceName)
+      // const file = fs.createReadStream(invoicePath)
+      const invoiceDocument = new PdfDocument()
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', 'attachment; filename="' + invoiceName + '')
+      invoiceDocument.pipe(fs.createWriteStream(invoicePath))
+      invoiceDocument.pipe(res)
+      invoiceDocument.fontSize(24).text('Tariel', {
+        underline: true
+      })
+      invoiceDocument.text('-------------------------------------')
+      console.log('order', order)
+      order.products.map(order => {
+        invoiceDocument.fontSize(14).text('ordered item: ' + order.product.title + ' price: ' + order.product.price * order.quantity + ' one product Price: ' + order.product.price)
+      })
+      invoiceDocument.end()
+    })
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
+}
+
 module.exports = {
   getProductsController,
   getIndexController,
@@ -187,4 +226,5 @@ module.exports = {
   getOrdersController,
   deleteCartProduct,
   postOrderController,
+  getDownloadOrderInvoice,
 }

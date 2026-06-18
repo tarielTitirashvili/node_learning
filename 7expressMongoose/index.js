@@ -43,6 +43,7 @@ app.set('view engine', 'ejs')
 app.set('views', 'views')
 
 app.use(express.static(path.join(rootDir, 'public')))
+app.use('/images',express.static(path.join(rootDir, 'images')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(multer({ storage: fileStorage, fileFilter }).single('image'))
 

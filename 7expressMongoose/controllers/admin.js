@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator')
 const Product = require('../models/product')
+const fileHelper = require('../util/file')
 
 const getAddProductController = (req, res, next) => {
 
@@ -22,7 +23,7 @@ const postAddProductController = (req, res, next) => {
       product: req.body
     })
   }
-  
+
   if (!errors.isEmpty()) {
     return res.status(422).render('admin/add-product', {
       path: 'admin/add-product',
@@ -34,7 +35,7 @@ const postAddProductController = (req, res, next) => {
   
   try {
     const { title, description, price } = req.body
-    const imageUrl = image.path
+    const imageUrl = '/' + image.path
 
     const product = new Product({ title, price, description, imageUrl: imageUrl, userId: req.session.userId })
     product.save()
@@ -91,7 +92,7 @@ const getEditProductController = (req, res, next) => {
 const postEditProductController = (req, res, next) => {
   const pId = req.body.id
   const pTitle = req.body.title
-  const pImageURL = req.body.imageURL || 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
+  // const pImageURL = req.body.imageURL || 'https://cdn.pixabay.com/photo/2016/03/31/20/51/book-1296045_960_720.png'
   const pDescription = req.body.description
   const pPrice = req.body.price
   const image = req.file
@@ -116,8 +117,9 @@ const postEditProductController = (req, res, next) => {
       // product.imageUrl = pImageURL
       product.price = pPrice
       product.description = pDescription
-      if(image){
-        product.imageUrl = image.path
+      if (image) {
+        fileHelper.deleteFile(product.imageUrl.replace('/', ''))
+        product.imageUrl = '/' + image.path
       }
 
       return product.save()
@@ -141,17 +143,24 @@ const postEditProductController = (req, res, next) => {
 const deleteProductController = (req, res, next) => {
   const productId = req.body.id
 
-  Product.findOneAndDelete({ _id: productId, userId: req.session.userId })
-    .then(dbRes => {
-      // console.log('error Success Message DB', dbRes)
-      res.redirect('/admin/products')
+  Product.findById(productId)
+    .then(product => {
+      if(!product){
+        return next(new Error('Product not found.'))
+      }
+      fileHelper.deleteFile(product.imageUrl.replace('/', ''))
+      
+      Product.findOneAndDelete({ _id: productId, userId: req.session.userId })
+        .then(dbRes => {
+          // console.log('error Success Message DB', dbRes)
+          res.redirect('/admin/products')
+        })
+        .catch(err => {
+          const error = new Error(err)
+          error.httpStatusCode = 500
+          next(error)
+        })
     })
-    .catch(err => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
-      next(error)
-    })
-  // Product.delete(productId)
 
 }
 

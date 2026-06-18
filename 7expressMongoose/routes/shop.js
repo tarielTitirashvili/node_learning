@@ -23,4 +23,6 @@ shopRouter.get('/cart/delete-product/:productId', shopController.deleteCartProdu
 
 shopRouter.post('/create-order', isAuthMiddleware, shopController.postOrderController)
 
+shopRouter.get('/order-invoice/:orderId', isAuthMiddleware, shopController.getDownloadOrderInvoice)
+
 module.exports = shopRouter
