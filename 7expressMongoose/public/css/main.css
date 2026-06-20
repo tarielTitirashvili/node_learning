@@ -121,3 +121,19 @@ main {
   justify-content: center;
   padding: 24px 0;
 }
+.pages{
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.pages a{
+  text-decoration: none;
+  color: #00695c;
+  border: 1px solid #00695c;
+  padding: 4px;
+  &:hover,&.active{
+    background-color: #00695c;
+    color: white;
+  }
+}

@@ -5,14 +5,34 @@ const fs = require('fs')
 const path = require('path')
 const PdfDocument = require('pdfkit')
 
+const DEFAULT_ITEMS_PER_PAGE = 2
+
 const getProductsController = (req, res, next) => {
-  Product.find().then(products => {
-    res.render('shop/product-list', {
-      docTitle: 'shop',
-      products,
-      path: '/products',
+  let page = req.query.page
+  page = +page || 1
+  let productsCount = null
+  Product.find()
+    .countDocuments({})
+    .then((count) => {
+      productsCount = count
+      return Product.find()
+        .skip((page - 1) * DEFAULT_ITEMS_PER_PAGE)
+        .limit(DEFAULT_ITEMS_PER_PAGE)
     })
-  })
+    .then(products => {
+      const lastPage = Math.ceil(productsCount / DEFAULT_ITEMS_PER_PAGE)
+      res.render('shop/product-list', {
+        docTitle: 'shop',
+        products,
+        path: '/products',
+        productsCount: productsCount,
+        hasNextPage: page < lastPage,
+        prevPage: page - 1,
+        currentPage: page,
+        nextPage: page + 1,
+        lastPage: lastPage
+      })
+    })
     .catch(err => {
       const error = new Error(err)
       error.httpStatusCode = 500
@@ -21,14 +41,32 @@ const getProductsController = (req, res, next) => {
 }
 
 const getIndexController = (req, res, next) => {
-  Product.find().then(products => {
-    // console.log(req.session.isLoggedIn)
-    res.render('shop/index', {
-      docTitle: 'shop',
-      products,
-      path: '/',
+  let page = req.query.page
+  page = +page || 1
+  let productsCount = null
+  Product.find()
+    .countDocuments({})
+    .then((count) => {
+      productsCount = count
+      return Product.find()
+        .skip((page - 1) * DEFAULT_ITEMS_PER_PAGE)
+        .limit(DEFAULT_ITEMS_PER_PAGE)
     })
-  })
+    .then(products => {
+      // console.log(req.session.isLoggedIn)
+      const lastPage = Math.ceil(productsCount / DEFAULT_ITEMS_PER_PAGE)
+      res.render('shop/index', {
+        docTitle: 'shop',
+        products,
+        path: '/',
+        productsCount: productsCount,
+        hasNextPage: page < lastPage,
+        prevPage: page - 1,
+        currentPage: page,
+        nextPage: page + 1,
+        lastPage: lastPage
+      })
+    })
     .catch(err => {
       const error = new Error(err)
       error.httpStatusCode = 500

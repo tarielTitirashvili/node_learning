@@ -39,6 +39,7 @@
               </article>
             </div>
             <% }) %>
+            <%- include('../_common/includes/pagination', {currentPage, prevPage, nextPage, lastPage, hasNextPage}) %>
               <% } else {%>
                 <h1>Product Not Found</h1>
                 <% } %>

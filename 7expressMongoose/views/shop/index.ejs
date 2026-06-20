@@ -8,6 +8,10 @@
       <main>
         <h1>My Products</h1>
         <p>List of all the products...</p>
+        <% if(productsCount){ %>
+          <p>products found: <%= productsCount %></p>
+        <% } %>
+        
         <% if(products.length> 0){ %>
           <% products.map((product)=>{ %>
             <div class="grid">
@@ -35,9 +39,10 @@
               </article>
             </div>
             <% }) %>
+            <%- include('../_common/includes/pagination', {currentPage, prevPage, nextPage, lastPage, hasNextPage}) %>
               <% } else {%>
                 <h1>Product Not Found</h1>
-                <% } %>
+              <% } %>
       </main>
   </body>
 
