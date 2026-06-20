@@ -44,6 +44,6 @@ adminRouter.post('/edit-product', isAuthMiddleware, productValidation, adminCont
 
 adminRouter.get('/products', isAuthMiddleware, adminController.getProductsForAdminController)
 
-adminRouter.post('/delete-product', isAuthMiddleware, adminController.deleteProductController)
+adminRouter.delete('/delete-product/:productId', isAuthMiddleware, adminController.deleteProductController)
 
 module.exports = adminRouter

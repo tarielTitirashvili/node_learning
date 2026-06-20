@@ -32,7 +32,7 @@ const postAddProductController = (req, res, next) => {
       product: req.body
     })
   }
-  
+
   try {
     const { title, description, price } = req.body
     const imageUrl = '/' + image.path
@@ -141,24 +141,25 @@ const postEditProductController = (req, res, next) => {
 }
 
 const deleteProductController = (req, res, next) => {
-  const productId = req.body.id
+  const productId = req.params.productId
 
   Product.findById(productId)
     .then(product => {
-      if(!product){
+      if (!product) {
         return next(new Error('Product not found.'))
       }
       fileHelper.deleteFile(product.imageUrl.replace('/', ''))
-      
+
       Product.findOneAndDelete({ _id: productId, userId: req.session.userId })
         .then(dbRes => {
           // console.log('error Success Message DB', dbRes)
-          res.redirect('/admin/products')
+          // res.redirect('/admin/products')
+          res.status(201).json({ status: "deleted" })
         })
         .catch(err => {
-          const error = new Error(err)
-          error.httpStatusCode = 500
-          next(error)
+          res.status(500).json({
+            message: 'internal Server Error delete Was unSuccessful'
+          })
         })
     })
 
