@@ -34,7 +34,7 @@
                                 </div>
                                 <div class="card__actions">
                                     <%- include('../_common/includes/add-to-cart', {product, isLoggedIn}) %>
-                                        <a href="/cart/delete-product/<%= product._id %>" method="POST">
+                                        <a href="/cart/delete-product/<%= product._id %>">
                                             <button type="submit" class="btn">Delete</button>
                                         </a>
                                 </div>
@@ -42,10 +42,13 @@
                         </div>
                         <% }) %>
                             <div class="centred">
-                                <form action="/create-order" method="POST">
+                                <!-- <form action="/create-order" method="POST">
                                     <input type="hidden" name="_csrf" value="<%= csurfToken %>" />
                                     <button type="submit" class="btn">Order Now!</button>
-                                </form>
+                                </form> -->
+                                <a href="/checkout">
+                                    <button type="submit" class="btn">Order Now!</button>
+                                </a>
                             </div>
                             <% } else {%>
                                 <h1>Product Not Found</h1>

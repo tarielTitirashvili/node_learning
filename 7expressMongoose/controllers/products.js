@@ -4,6 +4,7 @@ const Product = require('../models/product')
 const fs = require('fs')
 const path = require('path')
 const PdfDocument = require('pdfkit')
+const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 const DEFAULT_ITEMS_PER_PAGE = 2
 
@@ -80,12 +81,14 @@ const getCartController = (req, res, next) => {
   req.user.populate('cart.items.productId')
     // .execPopulate() //! might need in some cases
     .then(cartProducts => {
-      console.log(cartProducts.cart.items)
+      const totalPrice = cartProducts.cart.items.reduce((acc, product) =>
+        Math.round((product.productId?.price * product.quantity + acc) * 100) / 100
+        , 0)
       res.render('shop/cart', {
         docTitle: 'cart',
         path: '/cart',
         products: cartProducts.cart.items,
-        total: 1, //cartData.totalPrice
+        total: totalPrice, //cartData.totalPrice
       })
     })
     .catch(err => {
@@ -160,11 +163,50 @@ const getSingleProductController = (req, res, next) => {
 }
 
 const getCheckoutController = (req, res, next) => {
+  let totalPrice = 0
+  let products
 
-  res.render('shop/checkout', {
-    docTitle: 'checkout',
-    path: '/checkout',
-  })
+  req.user.populate('cart.items.productId')
+    // .execPopulate() //! might need in some cases
+    .then(cartProducts => {
+      products = cartProducts.cart.items
+      console.log('products', products)
+      totalPrice = products.reduce((acc, product) =>
+        Math.round((product.productId?.price * product.quantity + acc) * 100) / 100
+        , 0)
+      return stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        mode: 'payment',
+        line_items: products.map(product => ({
+          price_data: {
+            currency: 'usd',
+            unit_amount: Math.round(product.productId.price * 100),
+            product_data: {
+              name: product.productId.title,
+              description: product.productId.description,
+            },
+          },
+          quantity: product.quantity,
+        })),
+        success_url: req.protocol + '://' + req.get('host') + '/checkout/success',
+        cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
+      })
+    })
+    .then((session) => {
+      console.log(session)
+      res.render('shop/checkout', {
+        docTitle: 'checkout',
+        path: '/checkout',
+        products: products,
+        total: totalPrice, //cartData.totalPrice
+        session: session
+      })
+    })
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      next(error)
+    })
 }
 
 const deleteCartProduct = (req, res, next) => {
@@ -265,4 +307,5 @@ module.exports = {
   deleteCartProduct,
   postOrderController,
   getDownloadOrderInvoice,
+  getCheckoutSuccessController
 }

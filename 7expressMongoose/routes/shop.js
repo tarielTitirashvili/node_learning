@@ -15,7 +15,11 @@ shopRouter.post('/add-to-cart', isAuthMiddleware, shopController.postAddToCartCo
 
 shopRouter.get('/orders', isAuthMiddleware, shopController.getOrdersController)
 
-// shopRouter.get('/checkout', shopController.getCheckoutController)
+shopRouter.get('/checkout', isAuthMiddleware, shopController.getCheckoutController)
+
+shopRouter.get('/checkout/success', isAuthMiddleware, shopController.postOrderController)
+
+shopRouter.get('/checkout/cancel', isAuthMiddleware, shopController.getCheckoutController)
 
 shopRouter.get('/product/:productId', shopController.getSingleProductController)
 
