@@ -307,5 +307,4 @@ module.exports = {
   deleteCartProduct,
   postOrderController,
   getDownloadOrderInvoice,
-  getCheckoutSuccessController
 }
