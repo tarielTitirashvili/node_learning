@@ -1,10 +1,29 @@
 const express = require('express')
-const { getFeedController, postCreatePost } = require('../controllers/feed')
+const { getFeedController, postCreatePost, getPostController } = require('../controllers/feed')
+const { body } = require('express-validator')
 
 const feedRouter = express.Router()
 // GET /feed/post
-feedRouter.get('/posts', getFeedController)
+feedRouter.get(
+  '/posts',
+  getFeedController
+)
 // POST /feed/post
-feedRouter.post('/posts', postCreatePost)
- 
+feedRouter.post(
+  '/posts',
+  [
+    body('title')
+      .trim()
+      .isLength({ min: 5, max: 60 })
+      .withMessage('can be from 5 to 60 characters'),
+    body('content')
+      .trim()
+      .isLength({ min: 5, max: 400 })
+      .withMessage('can be from 5 to 60 characters'),
+  ],
+  postCreatePost
+)
+
+feedRouter.get('/post/:postId', getPostController)
+
 module.exports = feedRouter
