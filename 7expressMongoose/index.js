@@ -16,8 +16,8 @@ const authRouter = require('./routes/auth')
 const session = require('express-session')
 const MongoDBSessionStore = require('connect-mongodb-session')(session)
 const multer = require('multer')
-
-const MONGO_URI = 'mongodb+srv://tarielTitirashvili:xdGwE0V00yyYVQhK@nodeshopapp.1b9bnle.mongodb.net/shop?appName=nodeShopApp'
+const dotenv = require("dotenv")
+dotenv.config()
 
 const app = express()
 // console.log('process.env.password', process.env)
@@ -43,12 +43,12 @@ app.set('view engine', 'ejs')
 app.set('views', 'views')
 
 app.use(express.static(path.join(rootDir, 'public')))
-app.use('/images',express.static(path.join(rootDir, 'images')))
+app.use('/images', express.static(path.join(rootDir, 'images')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(multer({ storage: fileStorage, fileFilter }).single('image'))
 
 const mongoSessionStore = new MongoDBSessionStore({
-  uri: MONGO_URI,
+  uri: process.env.MONGO_URI,
   collection: 'sessions',
 })
 
@@ -103,7 +103,7 @@ app.use((error, req, res, next) => {
 
 
 mongoose
-  .connect(MONGO_URI)
+  .connect(process.env.MONGO_URI)
   .then(() => {
     // User.find().then(users => {
     //   if (!users?.length) {

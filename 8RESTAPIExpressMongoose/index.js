@@ -4,7 +4,8 @@ const mongoose = require('mongoose')
 const path = require('path')
 const multer = require('multer')
 const feedRouter = require('./routes/feed')
-const DB_URI = 'mongodb+srv://tarielTitirashvili:xdGwE0V00yyYVQhK@nodeshopapp.1b9bnle.mongodb.net/messages?appName=nodeShopApp'
+const dotenv = require("dotenv");
+dotenv.config();
 
 const app = express()
 
@@ -55,6 +56,6 @@ app.use((err, req, res, next)=>{
   res.status(statusCode).json({message: message})
 })
 
-mongoose.connect(DB_URI).then(dbResult =>{
+mongoose.connect(process.env.DB_URI).then(dbResult =>{
   app.listen(9000)
 }).catch(err => console.error('tariel',err))
