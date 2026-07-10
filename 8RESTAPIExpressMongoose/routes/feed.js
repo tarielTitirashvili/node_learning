@@ -1,5 +1,5 @@
 const express = require('express')
-const { getFeedController, postCreatePost, getPostController, updatePostController } = require('../controllers/feed')
+const { getFeedController, postCreatePost, getPostController, updatePostController, deletePostController } = require('../controllers/feed')
 const { body } = require('express-validator')
 
 const feedRouter = express.Router()
@@ -18,6 +18,9 @@ feedRouter.get(
   '/posts',
   getFeedController
 )
+
+feedRouter.get('/post/:postId', getPostController)
+
 // POST /feed/post
 feedRouter.post(
   '/posts',
@@ -25,8 +28,8 @@ feedRouter.post(
   postCreatePost
 )
 
-feedRouter.get('/post/:postId', getPostController)
-
 feedRouter.put('/post/:postId', postValidation, updatePostController)
+
+feedRouter.delete('/post/:postId', deletePostController)
 
 module.exports = feedRouter

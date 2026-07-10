@@ -6,7 +6,7 @@ const Post = require('../models/posts')
 
 const deleteImage = oldFilePath => {
   const filepath = path.join(__dirname, '..', oldFilePath)
-  fs.unlink(filepath, err => console.error(err))
+  return fs.unlink(filepath, err => console.error(err))
 }
 
 const getFeedController = (req, res, next) => {
@@ -151,9 +151,35 @@ const updatePostController = (req, res, next) => {
       })
     })
     .catch((err) => {
-      if(req.file){
+      if (req.file) {
         deleteImage(req.file.path)
       }
+      if (!err.statusCode) {
+        err.statusCode = 500
+      }
+      next(err)
+    })
+}
+
+const deletePostController = (req, res, next) => {
+  const postId = req.params.postId
+  Post.findById(postId)
+    .then(post => {
+      if (!post) {
+        const error = new Error('Post not found!')
+        error.statusCode = 404
+        throw error
+      }
+      deleteImage(post.imageUrl)
+      return Post.findByIdAndDelete(postId)
+    })
+    .then(result => {
+      return res.status(200).json({
+        message: 'post deleted',
+        post: result
+      })
+    })
+    .catch(err => {
       if (!err.statusCode) {
         err.statusCode = 500
       }
@@ -166,5 +192,6 @@ module.exports = {
   getFeedController,
   postCreatePost,
   getPostController,
-  updatePostController
+  updatePostController,
+  deletePostController
 }
