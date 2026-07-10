@@ -3,8 +3,8 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const path = require('path')
 const multer = require('multer')
-const feedRouter = require('./routes/feed')
 const dotenv = require("dotenv");
+const router = require('./routes')
 dotenv.config();
 
 const app = express()
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/feed', feedRouter)
+app.use(router)
 
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
