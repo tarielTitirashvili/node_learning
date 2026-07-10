@@ -53,7 +53,8 @@ app.use(router)
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500
   const message = err.message
-  res.status(statusCode).json({message: message})
+  const data = err.data
+  res.status(statusCode).json({message: message, data: data})
 })
 
 mongoose.connect(process.env.DB_URI).then(dbResult =>{

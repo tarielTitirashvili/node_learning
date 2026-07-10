@@ -10,6 +10,11 @@ const deleteImage = oldFilePath => {
 }
 
 const getFeedController = (req, res, next) => {
+  const page = req.query.page || 1
+  const perPage = 3
+  let totalItems
+
+  const start = (page - 1) * perPage
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -19,8 +24,15 @@ const getFeedController = (req, res, next) => {
   }
 
   Post.find()
+    .countDocuments()
+    .then(count => {
+      totalItems = count
+      return Post.find()
+        .skip(start)
+        .limit(perPage)
+    })
     .then(posts => {
-      res.json({ message: 'fetching posts', posts })
+      return res.json({ message: 'fetching posts', posts: posts, totalItems })
     })
     .catch(err => {
       if (!err.statusCode) {
