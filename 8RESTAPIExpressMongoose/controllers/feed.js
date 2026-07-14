@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 
 const Post = require('../models/posts')
+const User = require('../models/user')
 
 const deleteImage = oldFilePath => {
   const filepath = path.join(__dirname, '..', oldFilePath)
@@ -74,17 +75,26 @@ const postCreatePost = (req, res, next) => {
     title: title,
     content: content,
     imageUrl: req.file.path,
-    creator: {
-      name: 'ტარიელ'
-    },
+    creator: req.userId
   })
+  let creator
 
   post.save()
-    .then(dbRes => {
+    .then(result => {
+      return User.findById(req.userId)
+    })
+    .then(user => {
       // console.log('dbRes', dbRes)
+      creator = user
+      user.posts.push(post)
+      return user.save()
+    })
+    .then(result => {
+
       res.status(201).json({
         message: 'post created',
-        post: post
+        post: post,
+        creator: { _id: creator._id, name: creator.name }
       })
     })
     .catch(err => {
@@ -97,6 +107,7 @@ const postCreatePost = (req, res, next) => {
 
 const getPostController = (req, res, next) => {
   const postId = req.params.postId
+
   Post.findById(postId)
     .then((post) => {
       if (!post) {
@@ -147,7 +158,12 @@ const updatePostController = (req, res, next) => {
         const error = new Error('Post not found!')
         error.statusCode = 404
         throw error
+      } else if (post.creator.toString() !== req.userId) {
+        const error = new Error('not authorized!')
+        error.statusCode = 403
+        throw error
       }
+
       if (imageUrl !== post.imageUrl) {
         deleteImage(post.imageUrl)
       }
@@ -181,9 +197,20 @@ const deletePostController = (req, res, next) => {
         const error = new Error('Post not found!')
         error.statusCode = 404
         throw error
+      } else if (post.creator.toString() !== req.userId) {
+        const error = new Error('not authorized!')
+        error.statusCode = 403
+        throw error
       }
       deleteImage(post.imageUrl)
       return Post.findByIdAndDelete(postId)
+    })
+    .then(result => {
+      return User.findById(result.creator)
+    })
+    .then(user => {
+      user.posts.pull(postId)
+      return user.save()
     })
     .then(result => {
       return res.status(200).json({

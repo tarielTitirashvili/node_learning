@@ -1,6 +1,7 @@
 const express = require('express')
 const { getFeedController, postCreatePost, getPostController, updatePostController, deletePostController } = require('../controllers/feed')
 const { body } = require('express-validator')
+const { isAuth } = require('../middleware/is-auth')
 
 const feedRouter = express.Router()
 const postValidation = [
@@ -16,6 +17,7 @@ const postValidation = [
 // GET /feed/post
 feedRouter.get(
   '/posts',
+  isAuth,
   getFeedController
 )
 
@@ -24,12 +26,13 @@ feedRouter.get('/post/:postId', getPostController)
 // POST /feed/post
 feedRouter.post(
   '/posts',
+  isAuth,
   postValidation,
   postCreatePost
 )
 
-feedRouter.put('/post/:postId', postValidation, updatePostController)
+feedRouter.put('/post/:postId', isAuth, postValidation, updatePostController)
 
-feedRouter.delete('/post/:postId', deletePostController)
+feedRouter.delete('/post/:postId', isAuth, deletePostController)
 
 module.exports = feedRouter

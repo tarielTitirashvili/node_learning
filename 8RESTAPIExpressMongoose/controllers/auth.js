@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken')
 
 const signupController = (req, res, next) => {
   const errors = validationResult(req)
-  console.log(errors)
+
   if (!errors.isEmpty()) {
     const error = new Error('validation failed')
     error.statusCode = 422
