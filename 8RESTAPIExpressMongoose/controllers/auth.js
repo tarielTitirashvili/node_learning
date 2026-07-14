@@ -71,10 +71,59 @@ const loginController = (req, res, next) => {
       }
       next(err)
     })
+}
+
+const getStatusController = (req, res, next) => {
+  User.findById(req.userId)
+    .then(user => {
+      if (!user) {
+        const error = new Error('User with this email could\'t be found.')
+        error.statusCode = 401
+        throw error
+      }
+      return res.json({ status: user.status })
+    })
+    .catch(
+      err => {
+        if (!err.statusCode) {
+          err.statusCode = 500
+        }
+        next(err)
+      }
+    )
+}
+
+const updateStatusController = (req, res, next) => {
+  const newStatus = req.body.status
+  User.findById(req.userId)
+    .then(user => {
+      if (!user) {
+        const error = new Error('User with this email could\'t be found.')
+        error.statusCode = 401
+        throw error
+      }
+      user.status = newStatus
+      return user.save()
+    })
+    .then(
+      result => { 
+        return res.json({message: "status was updated"})
+      }
+    )
+    .catch(
+      err => {
+        if (!err.statusCode) {
+          err.statusCode = 500
+        }
+        next(err)
+      }
+    )
 
 }
 
 module.exports = {
   signupController,
-  loginController
+  loginController,
+  getStatusController,
+  updateStatusController,
 }
