@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator')
 const fs = require('fs')
 const path = require('path')
 
+const io = require('../socket')
 const Post = require('../models/posts')
 const User = require('../models/user')
 
@@ -29,7 +30,7 @@ const getFeedController = async (req, res, next) => {
 
     totalItems = postsCount
 
-    const posts = await Post.find().skip(start).limit(perPage)
+    const posts = await Post.find().populate('creator').skip(start).limit(perPage)
     return res.json({ message: 'fetching posts', posts: posts, totalItems })
   } catch (err) {
     if (!err.statusCode) {
@@ -71,7 +72,7 @@ const postCreatePost = async (req, res, next) => {
     user.posts.push(post)
 
     await user.save()
-
+    io.getIo().emit('posts', { action: 'post created', post: {...post._doc, creator: user} })
     return res.status(201).json({
       message: 'post created',
       post: post,

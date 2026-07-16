@@ -3,9 +3,9 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const path = require('path')
 const multer = require('multer')
-const dotenv = require("dotenv");
+const dotenv = require("dotenv")
 const router = require('./routes')
-dotenv.config();
+dotenv.config()
 
 const app = express()
 
@@ -26,7 +26,7 @@ const fileStorage = multer.diskStorage({
   },
 })
 
-app.use('/images',express.static(path.join(__dirname, 'images')))
+app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use(bodyParser.json())
 app.use(multer({ storage: fileStorage, fileFilter }).single('image'))
 
@@ -50,13 +50,23 @@ app.use((req, res, next) => {
 
 app.use(router)
 
-app.use((err, req, res, next)=>{
+app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500
   const message = err.message
   const data = err.data
-  res.status(statusCode).json({message: message, data: data})
+  res.status(statusCode).json({ message: message, data: data })
 })
 
-mongoose.connect(process.env.DB_URI).then(dbResult =>{
-  app.listen(9000)
-}).catch(err => console.error('tariel',err))
+mongoose.connect(process.env.DB_URI).then(dbResult => {
+  const server = app.listen(9000)
+  const io = require('./socket').init(server, {
+    cors: {
+      origin: "http://localhost:3001", // your React app
+      // methods: ["GET", "POST", ],
+      credentials: true,
+    },
+  })
+  io.on('connection', socket => {
+    console.log('Socket connected.')
+  })
+}).catch(err => console.error('tariel', err))
