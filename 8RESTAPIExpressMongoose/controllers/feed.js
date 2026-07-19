@@ -30,7 +30,7 @@ const getFeedController = async (req, res, next) => {
 
     totalItems = postsCount
 
-    const posts = await Post.find().populate('creator').skip(start).limit(perPage)
+    const posts = await Post.find().sort({ createdAt: -1 }).populate('creator').skip(start).limit(perPage)
     return res.json({ message: 'fetching posts', posts: posts, totalItems })
   } catch (err) {
     if (!err.statusCode) {
@@ -72,7 +72,7 @@ const postCreatePost = async (req, res, next) => {
     user.posts.push(post)
 
     await user.save()
-    io.getIo().emit('posts', { action: 'post created', post: {...post._doc, creator: user} })
+    io.getIo().emit('posts', { action: 'post created', post: { ...post._doc, creator: user } })
     return res.status(201).json({
       message: 'post created',
       post: post,
@@ -134,12 +134,12 @@ const updatePostController = async (req, res, next) => {
   }
 
   try {
-    const post = await Post.findById(postId)
+    const post = await Post.findById(postId).populate('creator')
     if (!post) {
       const error = new Error('Post not found!')
       error.statusCode = 404
       throw error
-    } else if (post.creator.toString() !== req.userId) {
+    } else if (post.creator._id.toString() !== req.userId) {
       const error = new Error('not authorized!')
       error.statusCode = 403
       throw error
@@ -152,6 +152,8 @@ const updatePostController = async (req, res, next) => {
     post.content = content
     post.imageUrl = imageUrl
     const updatedPost = await post.save()
+
+    io.getIo().emit('posts', { action: 'post updated', post: updatedPost })
 
     return res.status(200).json({
       message: 'post updated',
@@ -183,6 +185,7 @@ const deletePostController = async (req, res, next) => {
     }
     deleteImage(post.imageUrl)
     const deletedPost = await Post.findByIdAndDelete(postId)
+    io.getIo().emit('posts', { action: 'post deleted', post: deletedPost._id.toString() })
 
     const author = await User.findById(deletedPost.creator)
     author.posts.pull(postId)

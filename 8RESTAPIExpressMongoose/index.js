@@ -61,7 +61,7 @@ mongoose.connect(process.env.DB_URI).then(dbResult => {
   const server = app.listen(9000)
   const io = require('./socket').init(server, {
     cors: {
-      origin: "http://localhost:3001", // your React app
+      origin: "http://localhost:3000", // your React app
       // methods: ["GET", "POST", ],
       credentials: true,
     },
