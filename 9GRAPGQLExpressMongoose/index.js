@@ -4,6 +4,9 @@ const mongoose = require('mongoose')
 const path = require('path')
 const multer = require('multer')
 const dotenv = require("dotenv")
+const { graphqlHTTP } = require('express-graphql')
+const graphqlSchema = require('./graphql/schema')
+const graphqlResolvers = require('./graphql/resolvers')
 
 dotenv.config()
 
@@ -47,6 +50,11 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   next()
 })
+
+app.use('/graphql',graphqlHTTP({
+  schema: graphqlSchema,
+  rootValue: graphqlResolvers
+}))
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500
