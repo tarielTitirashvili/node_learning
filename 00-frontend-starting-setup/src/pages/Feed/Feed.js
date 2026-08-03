@@ -1,5 +1,4 @@
 import React, { Component, Fragment } from 'react';
-import openSocket from 'socket.io-client'
 
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
@@ -21,33 +20,6 @@ class Feed extends Component {
     postsLoading: true,
     editLoading: false
   };
-  addPost = post =>{
-    this.setState(prevState => {
-      const updatedPosts = [...prevState.posts];
-      if (prevState.postPage === 1) {
-        if (prevState.posts.length >= 2) {
-          updatedPosts.pop();
-        }
-        updatedPosts.unshift(post);
-      }
-      return {
-        posts: updatedPosts,
-        totalPosts: prevState.totalPosts + 1
-      };
-    });
-  }
-  updatePost = post => {
-    this.setState(prevState => {
-      const updatedPosts = [...prevState.posts];
-      const updatedPostIndex = updatedPosts.findIndex(p => p._id === post._id);
-      if (updatedPostIndex > -1) {
-        updatedPosts[updatedPostIndex] = post;
-      }
-      return {
-        posts: updatedPosts
-      };
-    });
-  };
 
   componentDidMount() {
     fetch('http://localhost:9000/auth/status', {
@@ -68,16 +40,6 @@ class Feed extends Component {
       .catch(this.catchError);
 
     this.loadPosts();
-    const socket = openSocket('http://localhost:9000')
-    socket.on('posts', data=>{
-      if(data.action === 'post created'){
-        this.addPost(data.post)
-      } else if (data.action === 'post updated'){
-        this.updatePost(data.post)
-      } else if (data.action === 'post deleted'){
-        this.loadPosts()
-      }
-    })
   }
 
 

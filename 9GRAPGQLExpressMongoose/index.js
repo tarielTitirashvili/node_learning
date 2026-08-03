@@ -51,9 +51,23 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/graphql',graphqlHTTP({
+app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
-  rootValue: graphqlResolvers
+  rootValue: graphqlResolvers,
+  graphiql: true,
+  formatError: (error) => {
+    if (!error.originalError) {
+      return error
+    }
+    const data = error.originalError.data
+    const message = error.message || 'an error occurred'
+    const code = error.originalError.code || 500
+    return {
+      message,
+      status: code,
+      data: data
+    }
+  }
 }))
 
 app.use((err, req, res, next) => {
