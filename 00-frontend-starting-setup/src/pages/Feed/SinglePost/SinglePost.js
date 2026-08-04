@@ -26,7 +26,6 @@ class SinglePost extends Component {
               name
             }
             createdAt
-            updatedAt
           }
         }
       `
