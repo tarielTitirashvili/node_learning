@@ -122,5 +122,26 @@ module.exports = {
       createdAt: createdPost.createdAt.toISOString(),
       updatedAt: createdPost.updatedAt.toISOString()
     }
+  },
+  posts: async function (args, req) {
+    if (!req.isAuth) {
+      const error = new Error('Not Authenticated!')
+      error.code = 401
+      throw error
+    }
+    const page = args.page || 1
+    const perPage = 3
+    const totalPostsCount = await Post.find().countDocuments()
+    const posts = await Post.find().sort({createdAt: -1}).skip((page-1) * perPage).limit(perPage).populate('creator')
+
+    return{
+      posts: posts.map(p=>({
+        ...p._doc,
+        _id: p._id.toString(),
+        createdAt: p.createdAt.toISOString(),
+        updatedAt: p.updatedAt.toISOString(),
+      })),
+      totalPosts: totalPostsCount
+    }
   }
 }
