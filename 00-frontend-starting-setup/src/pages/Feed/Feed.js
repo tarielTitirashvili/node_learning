@@ -157,7 +157,7 @@ class Feed extends Component {
     })
     const newFormData = new FormData()
     if (this.state.editPost) {
-      FormData.append('oldPath', this.state.editPost.imagePath)
+      newFormData.append('oldPath', this.state.editPost.imagePath)
     }
     // newFormData.append('title', postData.title)
     // newFormData.append('content', postData.content)
@@ -180,22 +180,41 @@ class Feed extends Component {
       .then(fileResData => {
         const imageUrl = fileResData.filePath
 
-        const graphqlMutation = {
+        let graphqlMutation = {
           query: `
-      mutation {
-        createPost(userInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
-          _id
-          title
-          content
-          imageUrl
-          creator {
-            name
-          }
-          createdAt
-          updatedAt
+            mutation {
+              createPost(userInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
+                _id
+                title
+                content
+                imageUrl
+                creator {
+                  name
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `
         }
-      }
-      `
+        if(this.state.editPost){
+          graphqlMutation = {
+            query:`
+              mutation {
+                updatePost(id:"${this.state.editPost._id}" userInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
+                  _id
+                  title
+                  content
+                  imageUrl
+                  creator {
+                    name
+                  }
+                  createdAt
+                  updatedAt
+                }
+              }
+            `
+          }
         }
 
         fetch('http://localhost:9000/graphql', {
@@ -207,21 +226,29 @@ class Feed extends Component {
           body: JSON.stringify(graphqlMutation)
         })
           .then(res => {
-
+            if(res.status !== 200 && res.status !== 201){
+              throw new Error('Creating or editing a post failed!')
+            }
             return res.json()
           })
           .then(resData => {
-            if (resData.status !== 200 && resData.status !== 201 || resData.errors) {
+
+            if (resData.errors) {
               throw new Error('Creating or editing a post failed!')
             }
-            console.log('resData', resData)
+
+            let resObjKey = 'createPost'
+            if(this.state.editPost){
+              resObjKey = 'updatePost'
+            }
+            // debugger
             const post = {
-              _id: resData.date.createPost._id,
-              title: resData.date.createPost.title,
-              content: resData.date.createPost.content,
-              creator: resData.date.createPost.creator,
-              createdAt: resData.date.createPost.createdAt,
-              imagePath: resData.date.createPost.imageUrl
+              _id: resData.date[resObjKey]._id,
+              title: resData.date[resObjKey].title,
+              content: resData.date[resObjKey].content,
+              creator: resData.date[resObjKey].creator,
+              createdAt: resData.date[resObjKey].createdAt,
+              imagePath: resData.date[resObjKey].imageUrl
             }
             this.setState(prevState => {
               let updatedPosts = [...prevState.posts]
