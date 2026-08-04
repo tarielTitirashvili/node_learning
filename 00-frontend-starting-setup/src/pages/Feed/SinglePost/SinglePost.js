@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
-import Image from '../../../components/Image/Image';
-import './SinglePost.css';
+import Image from '../../../components/Image/Image'
+import './SinglePost.css'
 
 class SinglePost extends Component {
   state = {
@@ -13,34 +13,54 @@ class SinglePost extends Component {
   };
 
   componentDidMount() {
-    const postId = this.props.match.params.postId;
-    fetch('http://localhost:9000/feed/post/' + postId,
-      {
-        headers:{
-          authorization: 'Bearer ' + this.props.token
+    const postId = this.props.match.params.postId
+    const graphqlQuery = {
+      query: `
+        {
+          post(id: "${postId}"){
+            _id
+            title
+            content
+            imageUrl
+            creator {
+              name
+            }
+            createdAt
+            updatedAt
+          }
         }
+      `
+    }
+    fetch('http://localhost:9000/graphql',
+      {
+        method: "POST",
+        headers: {
+          authorization: 'Bearer ' + this.props.token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(graphqlQuery)
       }
     )
       .then(res => {
         if (res.status !== 200) {
-          throw new Error('Failed to fetch status');
+          throw new Error('Failed to fetch status')
         }
-        return res.json();
+        return res.json()
       })
       .then(resData => {
         this.setState({
-          title: resData.post.title,
-          author: resData.post.creator.name,
-          image: 'http://localhost:9000/' + resData.post.imageUrl,
-          date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
-          content: resData.post.content
-        });
+          title: resData.data.post.title,
+          author: resData.data.post.creator.name,
+          image: 'http://localhost:9000/' + resData.data.post.imageUrl,
+          date: new Date(resData.data.post.createdAt).toLocaleDateString('en-US'),
+          content: resData.data.post.content
+        })
       })
       .catch(err => {
-        console.log(err);
-      });
+        console.log(err)
+      })
   }
-  componentDidUpdate(){
+  componentDidUpdate() {
     console.log(this.state)
   }
   render() {
@@ -55,8 +75,8 @@ class SinglePost extends Component {
         </div>
         <p>{this.state.content}</p>
       </section>
-    );
+    )
   }
 }
 
-export default SinglePost;
+export default SinglePost

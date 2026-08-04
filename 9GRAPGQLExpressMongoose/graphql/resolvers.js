@@ -132,16 +132,37 @@ module.exports = {
     const page = args.page || 1
     const perPage = 3
     const totalPostsCount = await Post.find().countDocuments()
-    const posts = await Post.find().sort({createdAt: -1}).skip((page-1) * perPage).limit(perPage).populate('creator')
+    const posts = await Post.find().sort({ createdAt: -1 }).skip((page - 1) * perPage).limit(perPage).populate('creator')
 
-    return{
-      posts: posts.map(p=>({
+    return {
+      posts: posts.map(p => ({
         ...p._doc,
         _id: p._id.toString(),
         createdAt: p.createdAt.toISOString(),
         updatedAt: p.updatedAt.toISOString(),
       })),
       totalPosts: totalPostsCount
+    }
+  },
+  post: async function ({ id }, req) {
+    if (!req.isAuth) {
+      const error = new Error('Not Authenticated!')
+      error.code = 401
+      throw error
+    }
+    const post = await Post.findById(id).populate('creator')
+
+    if (!post) {
+      const error = new Error('Post Not Found!')
+      error.code = 404
+      throw error
+    }
+
+    return {
+      ...post._doc,
+      _id: post._id.toString(),
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
     }
   }
 }
