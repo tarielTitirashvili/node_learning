@@ -8,6 +8,7 @@ const { graphqlHTTP } = require('express-graphql')
 const graphqlSchema = require('./graphql/schema')
 const graphqlResolvers = require('./graphql/resolvers')
 const authMiddleware = require('./middleware/auth')
+const fs = require('fs')
 
 dotenv.config()
 
@@ -57,6 +58,22 @@ app.use((req, res, next) => {
 
 app.use(authMiddleware.isAuth)
 
+app.put('/post-image', (req, res, next)=>{
+  if(!req.isAuth){
+    const error = new Error('Not authenticated!')
+    error.code = 401
+    throw error
+  }
+  if(!req.file){
+    return res.status(200).json({message: "No file provided!"})
+  }
+  if(req.body.oldPath){
+    deleteImage(req.body.oldPath)
+  }
+
+  return res.status(201).json({message:'File was stored!', filePath: req.file.path})
+})
+
 app.use('/graphql', graphqlHTTP({
   schema: graphqlSchema,
   rootValue: graphqlResolvers,
@@ -86,3 +103,9 @@ app.use((err, req, res, next) => {
 mongoose.connect(process.env.DB_URI).then(dbResult => {
   app.listen(9000)
 }).catch(err => console.error('tariel', err))
+
+
+const deleteImage = oldFilePath => {
+  const filepath = path.join(__dirname, '..', oldFilePath)
+  return fs.unlink(filepath, err => console.error(err))
+}

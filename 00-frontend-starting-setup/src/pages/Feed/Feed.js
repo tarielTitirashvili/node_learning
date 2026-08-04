@@ -65,6 +65,7 @@ class Feed extends Component {
               _id
               title
               content
+              imageUrl
               creator{
                 name
               }
@@ -154,11 +155,13 @@ class Feed extends Component {
     this.setState({
       editLoading: true
     })
-    // const newFormData = new FormData()
-
+    const newFormData = new FormData()
+    if (this.state.editPost) {
+      FormData.append('oldPath', this.state.editPost.imagePath)
+    }
     // newFormData.append('title', postData.title)
     // newFormData.append('content', postData.content)
-    // newFormData.append('image', postData.image)
+    newFormData.append('image', postData.image)
     // Set up data (with image!)
     // let url = 'http://localhost:9000/feed/posts';
     // let method = 'POST'
@@ -167,10 +170,20 @@ class Feed extends Component {
     //   method = 'PUT'
     // }
 
-    const graphqlMutation = {
-      query: `
+    fetch('http://localhost:9000/post-image', {
+      method: "PUT",
+      headers: {
+        authorization: 'Bearer ' + this.props.token
+      },
+      body: newFormData
+    }).then(res => res.json())
+      .then(fileResData => {
+        const imageUrl = fileResData.filePath
+
+        const graphqlMutation = {
+          query: `
       mutation {
-        createPost(userInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${"Tariel"}"}) {
+        createPost(userInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
           _id
           title
           content
@@ -183,59 +196,61 @@ class Feed extends Component {
         }
       }
       `
-    }
-
-    fetch('http://localhost:9000/graphql', {
-      method: 'POST',
-      headers: {
-        authorization: 'Bearer ' + this.props.token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(graphqlMutation)
-    })
-      .then(res => {
-
-        return res.json()
-      })
-      .then(resData => {
-        if (resData.status !== 200 && resData.status !== 201 || resData.errors) {
-          throw new Error('Creating or editing a post failed!')
         }
-        console.log('resData', resData)
-        const post = {
-          _id: resData.date.createPost._id,
-          title: resData.date.createPost.title,
-          content: resData.date.createPost.content,
-          creator: resData.date.createPost.creator,
-          createdAt: resData.date.createPost.createdAt
-        }
-        this.setState(prevState => {
-          let updatedPosts = [...prevState.posts]
-          if (prevState.editPost) {
-            const postIndex = prevState.posts.findIndex(
-              p => p._id === prevState.editPost._id
-            )
-            updatedPosts[postIndex] = post
-          } else {
-            updatedPosts.pop()
-            updatedPosts.unshift(post)
-          }
-          return {
-            posts: updatedPosts,
-            isEditing: false,
-            editPost: null,
-            editLoading: false
-          }
+
+        fetch('http://localhost:9000/graphql', {
+          method: 'POST',
+          headers: {
+            authorization: 'Bearer ' + this.props.token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(graphqlMutation)
         })
-      })
-      .catch(err => {
-        console.log(err)
-        this.setState({
-          isEditing: false,
-          editPost: null,
-          editLoading: false,
-          error: err
-        })
+          .then(res => {
+
+            return res.json()
+          })
+          .then(resData => {
+            if (resData.status !== 200 && resData.status !== 201 || resData.errors) {
+              throw new Error('Creating or editing a post failed!')
+            }
+            console.log('resData', resData)
+            const post = {
+              _id: resData.date.createPost._id,
+              title: resData.date.createPost.title,
+              content: resData.date.createPost.content,
+              creator: resData.date.createPost.creator,
+              createdAt: resData.date.createPost.createdAt,
+              imagePath: resData.date.createPost.imageUrl
+            }
+            this.setState(prevState => {
+              let updatedPosts = [...prevState.posts]
+              if (prevState.editPost) {
+                const postIndex = prevState.posts.findIndex(
+                  p => p._id === prevState.editPost._id
+                )
+                updatedPosts[postIndex] = post
+              } else {
+                updatedPosts.pop()
+                updatedPosts.unshift(post)
+              }
+              return {
+                posts: updatedPosts,
+                isEditing: false,
+                editPost: null,
+                editLoading: false
+              }
+            })
+          })
+          .catch(err => {
+            console.log(err)
+            this.setState({
+              isEditing: false,
+              editPost: null,
+              editLoading: false,
+              error: err
+            })
+          })
       })
   };
 
