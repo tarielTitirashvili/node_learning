@@ -197,9 +197,9 @@ class Feed extends Component {
             }
           `
         }
-        if(this.state.editPost){
+        if (this.state.editPost) {
           graphqlMutation = {
-            query:`
+            query: `
               mutation {
                 updatePost(id:"${this.state.editPost._id}" userInput: {title: "${postData.title}", content: "${postData.content}", imageUrl: "${imageUrl}"}) {
                   _id
@@ -226,7 +226,7 @@ class Feed extends Component {
           body: JSON.stringify(graphqlMutation)
         })
           .then(res => {
-            if(res.status !== 200 && res.status !== 201){
+            if (res.status !== 200 && res.status !== 201) {
               throw new Error('Creating or editing a post failed!')
             }
             return res.json()
@@ -238,7 +238,7 @@ class Feed extends Component {
             }
 
             let resObjKey = 'createPost'
-            if(this.state.editPost){
+            if (this.state.editPost) {
               resObjKey = 'updatePost'
             }
             // debugger
@@ -287,10 +287,20 @@ class Feed extends Component {
 
   deletePostHandler = postId => {
     this.setState({ postsLoading: true })
-    fetch('http://localhost:9000/feed/post/' + postId, {
-      method: 'DELETE', headers: {
-        authorization: 'Bearer ' + this.props.token
-      }
+    const graphqlQuery = {
+      query: `
+         mutation {
+          deletePost(id:"${postId}" )
+        }
+      `
+    }
+    fetch('http://localhost:9000/graphql', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {

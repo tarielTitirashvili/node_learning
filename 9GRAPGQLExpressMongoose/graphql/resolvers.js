@@ -3,6 +3,7 @@ const Post = require('../models/posts')
 const bcrypt = require('bcryptjs')
 const validator = require('validator')
 const jwt = require('jsonwebtoken')
+const deleteImage = require('../helpers/deleteFiles')
 
 module.exports = {
   createUser: async function (args, req) {
@@ -194,12 +195,13 @@ module.exports = {
     }
 
     const post = await Post.findById(id).populate('creator')
-    if(!post){
+    if (!post) {
       const error = new Error('post not found!')
       error.code = 401
       throw error
     }
-    if(post.creator._id.toString() !== req.userId){
+
+    if (post.creator._id.toString() !== req.userId) {
       const error = new Error('No Permission for edit!')
       error.code = 403
       throw error
@@ -207,7 +209,7 @@ module.exports = {
     post.title = title
     post.content = content
 
-    if(imageUrl !== 'undefined'){
+    if (imageUrl !== 'undefined') {
       post.imageUrl = imageUrl
     }
     const updatedPost = await post.save()
@@ -219,4 +221,27 @@ module.exports = {
       updatedAt: updatedPost.updatedAt.toISOString()
     }
   },
+  deletePost: async function ({ id }, req) {
+    if (!req.isAuth) {
+      const error = new Error('Not Authenticated!')
+      error.code = 401
+      throw error
+    }
+    const targetPost = await Post.findById(id)
+    if (targetPost.creator.toString() !== req.userId) {
+      const error = new Error('No Permission for edit!')
+      error.code = 403
+      throw error
+    }
+    if (targetPost.imageUrl) {
+      deleteImage(targetPost.imageUrl)
+    }
+    await Post.findByIdAndDelete(id)
+
+    const creator = await User.findById(req.userId).populate('posts')
+    creator.posts.pull(id)
+    await creator.save()
+
+    return true
+  }
 }

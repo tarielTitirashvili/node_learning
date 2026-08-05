@@ -8,7 +8,7 @@ const { graphqlHTTP } = require('express-graphql')
 const graphqlSchema = require('./graphql/schema')
 const graphqlResolvers = require('./graphql/resolvers')
 const authMiddleware = require('./middleware/auth')
-const fs = require('fs')
+const deleteImage = require('./helpers/deleteFiles')
 
 dotenv.config()
 
@@ -105,7 +105,3 @@ mongoose.connect(process.env.DB_URI).then(dbResult => {
 }).catch(err => console.error('tariel', err))
 
 
-const deleteImage = oldFilePath => {
-  const filepath = path.join(__dirname, '..', oldFilePath)
-  return fs.unlink(filepath, err => console.error(err))
-}
