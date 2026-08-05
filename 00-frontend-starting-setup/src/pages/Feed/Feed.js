@@ -22,11 +22,26 @@ class Feed extends Component {
   };
 
   componentDidMount() {
-    fetch('http://localhost:9000/auth/status', {
-      method: 'GET',
+    const graphqlQuery = {
+      query: `
+        {
+          user {
+            _id
+            name
+            email
+            password
+            status
+          }
+        }
+      `
+    }
+    fetch('http://localhost:9000/graphql', {
+      method: 'POST',
       headers: {
-        authorization: 'Bearer ' + this.props.token
-      }
+        authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
         if (res.status !== 200) {
@@ -35,7 +50,7 @@ class Feed extends Component {
         return res.json()
       })
       .then(resData => {
-        this.setState({ status: resData.status })
+        this.setState({ status: resData.data.user.status })
       })
       .catch(this.catchError)
 
@@ -110,15 +125,26 @@ class Feed extends Component {
 
   statusUpdateHandler = event => {
     event.preventDefault()
-    fetch('http://localhost:9000/auth/status', {
-      method: 'PUT',
+    const graphqlQuery = {
+      query: `
+        mutation {
+          updateStatus (status:"${this.state.status}") {
+            _id
+            name
+            email
+            password
+            status
+          }
+        }
+      `
+    }
+    fetch('http://localhost:9000/graphql', {
+      method: 'POST',
       headers: {
         authorization: 'Bearer ' + this.props.token,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        status: this.state.status
-      })
+      body: JSON.stringify(graphqlQuery)
     })
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {

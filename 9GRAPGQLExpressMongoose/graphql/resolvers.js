@@ -243,5 +243,44 @@ module.exports = {
     await creator.save()
 
     return true
+  },
+  user: async function (_, req) {
+    if (!req.isAuth) {
+      const error = new Error('Not Authenticated!')
+      error.code = 401
+      throw error
+    }
+    const user = await User.findById(req.userId)
+    if (!user) {
+      const error = new Error('User Not Found!')
+      error.code = 401
+      throw error
+    }
+    return {
+      ...user._doc,
+      _id: user._id.toString(),
+    }
+  },
+  updateStatus: async function ({ status }, req) {
+    if (!req.isAuth) {
+      const error = new Error('Not Authenticated!')
+      error.code = 401
+      throw error
+    }
+    const user = await User.findById(req.userId)
+    if (!user) {
+      const error = new Error('User Not Found!')
+      error.code = 401
+      throw error
+    }
+    if (validator.isEmpty(status) || !validator.isLength(status, { min: 5 })) {
+      errors.push({ message: 'Invalid Status' })
+    }
+    user.status = status
+    const updatedUser = await user.save()
+    return {
+      ...updatedUser._doc,
+      _id: (await updatedUser)._id.toString(),
+    }
   }
 }
