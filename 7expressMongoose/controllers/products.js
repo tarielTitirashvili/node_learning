@@ -4,7 +4,9 @@ const Product = require('../models/product')
 const fs = require('fs')
 const path = require('path')
 const PdfDocument = require('pdfkit')
-const stripe = require('stripe')(process.env.STRIPE_KEY)
+const stripe = require('stripe')('process.env.STRIPE_KEY')
+const dotenv = require("dotenv")
+dotenv.config()
 
 const DEFAULT_ITEMS_PER_PAGE = 2
 

@@ -5,8 +5,16 @@ const path = require('path')
 // const { mongoConnect } = require('./util/database')
 const mongoose = require('mongoose')
 const User = require('./models/user')
+const fs = require('fs')
 const csurf = require('csurf')
 const flash = require('connect-flash')
+// helmet adds additional header for security mainly
+const helmet = require("helmet")
+// in idea compresses files but not sow real reduction in sizes needs additional testing
+const compression = require("compression")
+const morgan = require("morgan")
+const https = require('https')
+
 // my code
 const adminRouter = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
@@ -37,10 +45,19 @@ const fileStorage = multer.diskStorage({
     cb(null, new Date().toISOString() + '-' + file.originalname)
   },
 })
+console.log(process.env.NODE_ENV)
 
+const privateKey = fs.readFileSync('server.key')
+const certificate = fs.readFileSync('server.cert')
 
 app.set('view engine', 'ejs')
 app.set('views', 'views')
+app.use(helmet())
+app.use(compression())
+
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+
+app.use(morgan('combined', { stream: accessLogStream }))
 
 app.use(express.static(path.join(rootDir, 'public')))
 app.use('/images', express.static(path.join(rootDir, 'images')))
@@ -117,5 +134,11 @@ mongoose
     //     user.save()
     //   }
     // })
-    app.listen(9000)
+    https.createServer(
+      {
+        key: privateKey,
+        cert: certificate
+      },
+      app
+    ).listen(process.env.PORT || 9000)
   }).catch(err => console.error(err))
