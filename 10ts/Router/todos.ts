@@ -25,7 +25,8 @@ router.post('/todos', (req, res, next) => {
 
 router.put('/todos/:id', (req, res, next) => {
   const todoId = parseInt(req.params.id);
-  const { text, completed } = req.body;
+  const body = req.body as { text: string; completed: boolean };
+  const { text, completed } = body;
 
   const todoIndex = todos.findIndex(todo => todo.id === todoId);
   if (todoIndex !== -1) {
